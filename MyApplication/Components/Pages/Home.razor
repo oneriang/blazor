@@ -1,0 +1,247 @@
+﻿@page "/home"
+@using BlazorApp.Data
+@using System.Data
+@using System.Data.SQLite
+
+<PageTitle>Home</PageTitle>
+
+@* <DynamicComponent Type="@componentType" Parameters="@parameters" />
+
+@code {
+    private Type componentType = Type.GetType("MudBlazor.MudButton, MudBlazor");
+    
+    private IDictionary<string, object> parameters = new Dictionary<string, object>
+    {
+        { "ChildContent", (RenderFragment)(builder =>
+            {
+                builder.AddContent(0, "Click me");
+            })
+        },
+        { "Color", Color.Primary },
+        { "Variant", Variant.Filled }
+        // Add other parameters as needed
+    };
+} *@
+
+<DynamicComponent Type="@componentType" Parameters="@parameters" />
+
+@code {
+    private Type componentType = Type.GetType("MudBlazor.MudPaper, MudBlazor");
+    
+    private IDictionary<string, object> parameters = new Dictionary<string, object>
+    {
+        { "ChildContent", (RenderFragment)(builder =>
+            {
+                // 在MudPaper中添加MudButton
+                builder.OpenComponent(0, Type.GetType("MudBlazor.MudButton, MudBlazor"));
+                builder.AddAttribute(1, "Color", MudBlazor.Color.Primary);
+                builder.AddAttribute(1, "Variant", MudBlazor.Variant.Filled);
+                builder.AddAttribute(2, "ChildContent", (RenderFragment)(buttonBuilder =>
+                {
+                    buttonBuilder.AddContent(3, "Click me");
+                }));
+                builder.CloseComponent();
+            })
+        },
+        { "Class", "pa-16 ma-2" },
+        { "Height", "300px" },
+        { "Width", "300px" },
+        { "Elevation", 3 }
+    };
+}
+
+@if (tableList == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <MudPaper Width="300px">
+        <MudList SelectedItemChanged="OnSelectedItemChanged" Clickable="true">
+            @foreach (var item in tableList)
+            {
+                <MudListItem Text="@item.TableName" Value="@item.TableName"/>
+            }
+        </MudList>
+    </MudPaper>
+    <p>
+        Selected value: @selectedValue
+    </p>
+}
+
+@if (data == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                @foreach (var col in selectedTable.Columns)
+                {
+                    <th>@col.ColumnName</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in data)
+            {
+                <tr>
+                    @foreach (var entry in item)
+                    {
+                        <td>@entry.Value</td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private DynamicEntity dynamicEntity;
+    private string connectionString = "Data Source=Chinook.db;Version=3;";
+    private string tableName = "Artist";
+    private List<TableInfo> tableList;
+    private TableInfo selectedTable;
+    string? listboxValue;
+
+    private int primaryKeyValue = 1; // Replace with actual primary key value
+
+    private List<Dictionary<string, object>> data;
+
+    MudListItem selectedItem;
+    object selectedValue = "";
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        tableList = DynamicEntity.GetTableList(connectionString);
+    }
+
+    private void OnSelectedItemChanged(MudListItem e)
+    {
+
+        tableName = e.Text;
+        selectedValue = tableName;
+        Console.WriteLine(tableName);
+
+        selectedTable = tableList.Find(x => x.TableName == tableName);
+
+        List<TableInfo> tableInfo = GetTableInfo(connectionString, tableName);
+        Console.WriteLine(tableInfo);
+       
+        dynamicEntity = CreateDynamicEntity(tableInfo);
+
+        data = QueryData();
+    }
+
+    private void InsertData()
+    {
+        dynamicEntity.AddProperty("ColumnName", "SomeValue");
+        dynamicEntity.Insert(connectionString, tableName);
+    }
+
+    private void UpdateData()
+    {
+        dynamicEntity.SetValue("ColumnName", "NewValue");
+        dynamicEntity.Update(connectionString, tableName, GetPrimaryKeyValues());
+    }
+
+    private void DeleteData()
+    {
+        dynamicEntity.Delete(connectionString, tableName, GetPrimaryKeyValues());
+    }
+
+    private List<Dictionary<string, object>> QueryData()
+    {
+        @* return dynamicEntity.Select(connectionString, tableName); *@
+
+        Console.WriteLine("--------------");
+        Console.WriteLine(tableName);
+        List<Dictionary<string, object>> queryResults = dynamicEntity.Select(connectionString, tableName);
+
+@*
+        foreach (var row in queryResults)
+        {
+            foreach (var entry in row)
+            {
+                Console.WriteLine($"{entry.Key}: {entry.Value}");
+            }
+            Console.WriteLine("--------------");
+        }
+*@
+        return queryResults;
+    }
+
+    private Dictionary<string, object> GetPrimaryKeyValues()
+    {
+        // Replace with the actual logic to get primary key values
+        return new Dictionary<string, object>
+            {
+                {"PrimaryKeyColumn", primaryKeyValue}
+            };
+    }
+}
+
+@code {
+
+    private List<TableInfo> GetTableInfo(string connectionString, string tableName)
+    {
+        List<TableInfo> tableInfo = new List<TableInfo>();
+
+        using (SQLiteConnection connection = new SQLiteConnection(connectionString))
+        {
+            connection.Open();
+
+            string query = $"PRAGMA table_info('{tableName}');";
+
+            using (SQLiteCommand command = new SQLiteCommand(query, connection))
+            {
+                using (SQLiteDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        TableInfo info = new TableInfo
+                            {
+                                ColumnName = reader["name"].ToString(),
+                                DataType = reader["type"].ToString()
+                            };
+
+                        tableInfo.Add(info);
+                    }
+                }
+            }
+        }
+
+        return tableInfo;
+    }
+
+    private DynamicEntity CreateDynamicEntity(List<TableInfo> tableInfo)
+    {
+        DynamicEntity dynamicEntity = new DynamicEntity();
+
+        foreach (var info in tableInfo)
+        {
+            dynamicEntity.AddProperty(info.ColumnName, GetDefaultValueForType(info.DataType));
+        }
+
+        return dynamicEntity;
+    }
+
+    private object GetDefaultValueForType(string dataType)
+    {
+        switch (dataType.ToLower())
+        {
+            case "integer":
+                return 0;
+            case "text":
+                return string.Empty;
+            // 根据需要添加其他数据类型的情况
+            default:
+                return null;
+        }
+    }
+
+}

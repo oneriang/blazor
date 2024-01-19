@@ -1,0 +1,284 @@
+﻿@page "/"
+@using BlazorApp.Data
+@using System.Data
+@using System.Data.SQLite
+
+<PageTitle>Home</PageTitle>
+
+
+<MudText Typo="Typo.h3" GutterBottom="true">Hello, world!</MudText>
+<MudText Class="mb-8">Welcome to your new app, powered by MudBlazor and the .NET 8 Template!</MudText>
+
+<MudAlert Severity="Severity.Normal">
+    You can find documentation and examples on our website here:
+    <MudLink Href="https://mudblazor.com" Target="_blank" Typo="Typo.body2" Color="Color.Primary">
+        <b>www.mudblazor.com</b>
+    </MudLink>
+</MudAlert>
+
+<br />
+<MudText Typo="Typo.h5" GutterBottom="true">Interactivity in this Template</MudText>
+<br />
+<MudText Typo="Typo.body2">
+    When you opt for the "Global" Interactivity Location, <br />
+    the render modes are defined in App.razor and consequently apply to all child components.<br />
+    In this case, providers are globally set in the MainLayout.<br />
+    <br />
+    On the other hand, if you choose the "Per page/component" Interactivity Location,<br />
+    it is necessary to include the MyMudProviders component on every interactive page.<br />
+    <br />
+    If a render mode is not specified for a page, it defaults to Server-Side Rendering (SSR),<br />
+    similar to this page. While MudBlazor allows pages to be rendered in SSR,<br />
+    please note that interactive features, such as buttons and dropdown menus, will not be functional.
+</MudText>
+
+<br />
+<MudText Typo="Typo.h5" GutterBottom="true">What's New in Blazor with the Release of .NET 8</MudText>
+<br />
+<MudText Typo="Typo.h6" GutterBottom="true">Prerendering</MudText>
+<MudText Typo="Typo.body2" GutterBottom="true">
+    If you're exploring the features of .NET 8 Blazor,<br /> you might be pleasantly surprised to learn that each page is prerendered on the server,<br /> regardless of the selected render mode.<br /><br />
+    This means that you'll need to inject all necessary services on the server,<br /> even when opting for the wasm (WebAssembly) render mode.<br /><br />
+    This prerendering functionality is crucial to ensuring that WebAssembly mode feels fast and responsive,<br /> especially when it comes to initial page load times.<br /><br />
+    For more information on how to detect prerendering and leverage the RenderContext, you can refer to the following link:
+    <MudLink Href="https://github.com/dotnet/aspnetcore/issues/51468#issuecomment-1783568121" Target="_blank" Typo="Typo.body2" Color="Color.Primary">
+        More details
+    </MudLink>
+</MudText>
+
+<br />
+<MudText Typo="Typo.h6" GutterBottom="true">InteractiveAuto</MudText>
+<MudText Typo="Typo.body2">
+    A discussion on how to achieve this can be found here:
+    <MudLink Href="https://github.com/dotnet/aspnetcore/issues/51468#issue-1950424116" Target="_blank" Typo="Typo.body2" Color="Color.Primary">
+        More details
+    </MudLink>
+</MudText>
+
+
+@if (tableList == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <FluentListbox ValueChanged="TableSelectChanged" TOption="string">
+        @foreach (var item in tableList)
+        {
+            <FluentOption Value="@item.TableName">@item.TableName</FluentOption>
+        }
+    </FluentListbox>
+    <p>
+        Selected value: @listboxValue
+    </p>
+    @*
+
+<table class="table">
+<thead>
+<tr>
+<th>Name</th>
+</tr>
+</thead>
+<tbody>
+@foreach (var item in tableList)
+{
+<tr>
+<td>@item</td>
+</tr>
+}
+</tbody>
+</table> *@
+}
+
+@if (data == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    @* <table class="table">
+<thead>
+<tr>
+<th>ArtistId</th>
+<th>Name</th>
+</tr>
+</thead>
+<tbody>
+@foreach (var item in data)
+{
+<tr>
+<td>@item["ArtistId"]</td>
+<td>@item["Name"]</td>
+</tr>
+}
+</tbody>
+</table> *@
+    <table class="table">
+        <thead>
+            <tr>
+                @foreach (var col in selectedTable.Columns)
+                {
+                    <th>@col.ColumnName</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in data)
+            {
+                <tr>
+                    @foreach (var entry in item)
+                    {
+                        <td>@entry.Value</td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private DynamicEntity dynamicEntity;
+    private string connectionString = "Data Source=Chinook.db;Version=3;";
+    private string tableName = "Artist";
+    private List<TableInfo> tableList;
+    private TableInfo selectedTable;
+    string? listboxValue;
+
+    private int primaryKeyValue = 1; // Replace with actual primary key value
+
+    private List<Dictionary<string, object>> data;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        @* List<TableInfo> tableInfo = GetTableInfo(connectionString, tableName);
+dynamicEntity = CreateDynamicEntity(tableInfo);
+
+// Additional initialization if needed
+data = QueryData(); *@
+
+        tableList = DynamicEntity.GetTableList(connectionString);
+        // Do something with the tableList, e.g., display it in the UI
+    }
+
+    private async Task TableSelectChanged(string e)
+    {
+        listboxValue = e;
+
+        tableName = listboxValue;
+
+        selectedTable = tableList.Find(x => x.TableName == tableName);
+
+        List<TableInfo> tableInfo = GetTableInfo(connectionString, tableName);
+        dynamicEntity = CreateDynamicEntity(tableInfo);
+
+        // Additional initialization if needed
+        data = QueryData();
+    }
+
+    private void InsertData()
+    {
+        dynamicEntity.AddProperty("ColumnName", "SomeValue");
+        dynamicEntity.Insert(connectionString, tableName);
+    }
+
+    private void UpdateData()
+    {
+        dynamicEntity.SetValue("ColumnName", "NewValue");
+        dynamicEntity.Update(connectionString, tableName, GetPrimaryKeyValues());
+    }
+
+    private void DeleteData()
+    {
+        dynamicEntity.Delete(connectionString, tableName, GetPrimaryKeyValues());
+    }
+
+    private List<Dictionary<string, object>> QueryData()
+    {
+        @* return dynamicEntity.Select(connectionString, tableName); *@
+
+        List<Dictionary<string, object>> queryResults = dynamicEntity.Select(connectionString, tableName);
+
+        foreach (var row in queryResults)
+        {
+            foreach (var entry in row)
+            {
+                Console.WriteLine($"{entry.Key}: {entry.Value}");
+            }
+            Console.WriteLine("--------------");
+        }
+
+        return queryResults;
+    }
+
+    private Dictionary<string, object> GetPrimaryKeyValues()
+    {
+        // Replace with the actual logic to get primary key values
+        return new Dictionary<string, object>
+{
+{"PrimaryKeyColumn", primaryKeyValue}
+};
+    }
+}
+
+@code {
+
+    private List<TableInfo> GetTableInfo(string connectionString, string tableName)
+    {
+        List<TableInfo> tableInfo = new List<TableInfo>();
+
+        using (SQLiteConnection connection = new SQLiteConnection(connectionString))
+        {
+            connection.Open();
+
+            string query = $"PRAGMA table_info({tableName})";
+
+            using (SQLiteCommand command = new SQLiteCommand(query, connection))
+            {
+                using (SQLiteDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        TableInfo info = new TableInfo
+                            {
+                                ColumnName = reader["name"].ToString(),
+                                DataType = reader["type"].ToString()
+                            };
+
+                        tableInfo.Add(info);
+                    }
+                }
+            }
+        }
+
+        return tableInfo;
+    }
+
+    private DynamicEntity CreateDynamicEntity(List<TableInfo> tableInfo)
+    {
+        DynamicEntity dynamicEntity = new DynamicEntity();
+
+        foreach (var info in tableInfo)
+        {
+            dynamicEntity.AddProperty(info.ColumnName, GetDefaultValueForType(info.DataType));
+        }
+
+        return dynamicEntity;
+    }
+
+    private object GetDefaultValueForType(string dataType)
+    {
+        switch (dataType.ToLower())
+        {
+            case "integer":
+                return 0;
+            case "text":
+                return string.Empty;
+            // 根据需要添加其他数据类型的情况
+            default:
+                return null;
+        }
+    }
+
+}

@@ -1,0 +1,94 @@
+﻿@page "/"
+@using Microsoft.AspNetCore.Components.Rendering;
+@using System.Text.Json;
+<h3>动态组件演示</h3>
+
+<div>
+    @dc
+</div>
+
+@code {
+
+    public class DynamicComponent : ComponentBase
+    {
+        protected override void BuildRenderTree(RenderTreeBuilder builder)
+        {
+            builder.OpenComponent(0, Type.GetType("MudBlazor.MudPaper, MudBlazor"));
+            builder.AddAttribute(1, "Class", "pa-16 ma-2");
+            builder.AddAttribute(1, "Height", "300px");
+            builder.AddAttribute(1, "Width", "300px");
+            builder.AddAttribute(1, "Elevation", 3);
+            builder.AddAttribute(2, "ChildContent", (RenderFragment)(builder1 =>
+            {
+                builder1.OpenComponent(0, Type.GetType("MudBlazor.MudButton, MudBlazor"));
+                builder1.AddAttribute(1, "Color", (Color)Enum.Parse(typeof(Color), "Primary"));
+                builder1.AddAttribute(1, "Variant", (Variant)Enum.Parse(typeof(Variant), "Filled"));
+                builder1.AddAttribute(2, "ChildContent", (RenderFragment)(buttonBuilder =>
+                {
+                    buttonBuilder.AddContent(3, "Click me");
+                }));
+                builder1.CloseComponent();
+            }));
+            builder.CloseComponent();
+        }
+    }
+
+    private RenderFragment dc { get; set; }
+
+    protected override void OnInitialized()
+    {
+        // 创建动态组件的实例
+        dc = builder =>
+        {
+            builder.OpenComponent(0, typeof(DynamicComponent));
+            builder.CloseComponent();
+        };
+
+@* 
+
+        string jsonString = @"[
+            {
+                ""Type"": ""MudBlazor.MudPaper, MudBlazor"",
+                ""Attribute"": {
+                    ""Class"": ""pa-16 ma-2"",
+                    ""Height"": ""300px"",
+                    ""Width"": ""300px"",
+                    ""Elevation"": 3,
+                    ""ChildContent"": [
+                        {
+                            ""Type"": ""MudBlazor.MudRating, MudBlazor"",
+                            ""Attribute"": {
+                                ""SelectedValue"": 2
+                            }
+                        },
+                        {
+                            ""Type"": ""MudBlazor.MudButton, MudBlazor"",
+                            ""Attribute"": {
+                                ""Color"": ""Primary"",
+                                ""Variant"": ""Filled"",
+                                ""ChildContent"": [
+                                    {
+                                        ""Content"": ""Click me""
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            }
+        ]";
+
+        List<Dictionary<string, object>> myList = JsonSerializer.Deserialize<List<Dictionary<string, object>>>(jsonString);
+        Console.WriteLine(myList);
+
+        foreach (var item in myList)
+        {
+            foreach (var kvp in item)
+            {
+                Console.WriteLine($"{kvp.Key}: {kvp.Value}");
+            }
+            Console.WriteLine();
+        } *@
+
+    }
+}

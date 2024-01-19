@@ -1,0 +1,31 @@
+[
+    {
+        "Type": "MudBlazor.MudPaper, MudBlazor",
+        "Attribute": {
+            "Class": "pa-16 ma-2",
+            "Height": "300px",
+            "Width": "300px",
+            "Elevation": 3,
+            "ChildContent": [
+                {
+                    "Type": "MudBlazor.MudRating, MudBlazor",
+                    "Attribute": {
+                        "SelectedValue": 2
+                    }
+                },
+                {
+                    "Type": "MudBlazor.MudButton, MudBlazor",
+                    "Attribute": {
+                        "Color": "Primary",
+                        "Variant": "Filled",
+                        "ChildContent": [
+                            {
+                                "Content": "Click me"
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    }
+]

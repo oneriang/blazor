@@ -1,0 +1,179 @@
+﻿@page "/dc1"
+@using Microsoft.AspNetCore.Components.Rendering;
+
+<h3>动态组件演示</h3>
+
+<div>
+    @dc
+</div>
+
+@code {
+
+    @* private dcInfo = new List<Dictionary<string, object>>()
+    {
+        new Dictionary<string, object> ()
+        {
+            { "Type", "MudBlazor.MudPaper, MudBlazor" },
+            { "Attribute" , new Dictionary<string, object>()
+                {
+                    { "Class", "pa-16 ma-2" },
+                    { "Height", "300px" },
+                    { "Width", "300px" },
+                    { "Elevation", 3 }
+                }
+            }
+        }
+    }; *@
+
+    public class DynamicComponent : ComponentBase
+    {
+        private List<Dictionary<string, object>> dcInfo = new List<Dictionary<string, object>>()
+        {
+            new Dictionary<string, object>()
+            {
+                { "Type", "MudBlazor.MudPaper, MudBlazor" },
+                { "Attribute" , new Dictionary<string, object>()
+                    {
+                        { "Class", "pa-16 ma-2" },
+                        { "Height", "300px" },
+                        { "Width", "300px" },
+                        { "Elevation", 3 },
+                        { "ChildContent", new List<IDictionary<string, object>>()
+                            {
+                                new Dictionary<string, object>()
+                                    {
+                                        { "Type", "MudBlazor.MudRating, MudBlazor" },
+                                        { "Attribute" , new Dictionary<string, object>()
+                                            {
+                                                { "SelectedValue", 2 }
+                                            }
+                                        }
+                                    },
+                                new Dictionary<string, object>()
+                                    {
+                                        { "Type", "MudBlazor.MudButton, MudBlazor" },
+                                        { "Attribute" , new Dictionary<string, object>()
+                                            {
+                                                { "Color", "Primary" },
+                                                { "Variant", "Filled" },
+                                                { "ChildContent", new List<IDictionary<string, object>>() 
+                                                    {
+                                                        new Dictionary<string, object>()
+                                                        {
+                                                            { "Content", "Click me" }
+                                                        },
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        protected override void BuildRenderTree(RenderTreeBuilder builder)
+        {
+            builder.OpenComponent(0, Type.GetType("MudBlazor.MudPaper, MudBlazor"));
+            builder.AddAttribute(1, "Class", "pa-16 ma-2");
+            builder.AddAttribute(1, "Height", "300px");
+            builder.AddAttribute(1, "Width", "300px");
+            builder.AddAttribute(1, "Elevation", 3);
+            builder.AddAttribute(2, "ChildContent", (RenderFragment)(builder1 =>
+            {
+                builder1.OpenComponent(0, Type.GetType("MudBlazor.MudButton, MudBlazor"));
+                builder1.AddAttribute(1, "Color", (Color)Enum.Parse(typeof(Color), "Primary"));
+                builder1.AddAttribute(1, "Variant", (Variant)Enum.Parse(typeof(Variant), "Filled"));
+                builder1.AddAttribute(2, "ChildContent", (RenderFragment)(buttonBuilder =>
+                {
+                    buttonBuilder.AddContent(3, "Click me");
+                }));
+                builder1.CloseComponent();
+            }));
+            builder.CloseComponent();
+
+            foreach (var row in dcInfo)
+            {
+                foreach (var entry in row)
+                {
+                    Console.WriteLine($"{entry.Key}: {entry.Value}");
+                    if (entry.Key == "Type") {
+                        builder.OpenComponent(0, Type.GetType(entry.Value.ToString()));
+                    }
+                    else if (entry.Key == "Attribute") {
+                        foreach (var att in (Dictionary<string, object>)entry.Value) {
+                            if (att.Key == "ChildContent") {
+                                builder.AddAttribute(2, "ChildContent", (RenderFragment)(builder1 =>
+                                {
+                                    foreach (var row1 in (List<IDictionary<string, object>>)att.Value) {
+                                        foreach (var entry1 in row1)
+                                        {
+                                            Console.WriteLine($"{entry1.Key}: {entry1.Value}");
+                                            if (entry1.Key == "Type") {
+                                                builder1.OpenComponent(0, Type.GetType(entry1.Value.ToString()));
+                                            }
+                                            else if (entry1.Key == "Attribute") {
+                                                foreach (var att1 in (Dictionary<string, object>)entry1.Value) {
+                                                    if (att1.Key == "ChildContent") 
+                                                    {
+                                                        builder1.AddAttribute(2, "ChildContent", (RenderFragment)(builder2 =>
+                                                        {
+                                                            foreach (var row2 in (List<IDictionary<string, object>>)att1.Value)
+                                                            {
+                                                                foreach (var entry2 in row2)
+                                                                {
+                                                                    Console.WriteLine($"{entry2.Key}: {entry2.Value}");
+                                                                    if (entry2.Key == "Content") {
+                                                                        builder2.AddContent(3, entry2.Value.ToString());
+                                                                    }
+                                                                }
+                                                            }
+                                                        }));  
+                                                    } 
+                                                    else 
+                                                    {
+                                                        if (att1.Key == "Color")
+                                                        {
+                                                            builder1.AddAttribute(1, att1.Key, (Color)Enum.Parse(typeof(Color), att1.Value.ToString()));
+                                                        }
+                                                        else if (att1.Key == "Variant")
+                                                        {
+                                                            builder1.AddAttribute(1, att1.Key, (Variant)Enum.Parse(typeof(Variant), att1.Value.ToString()));
+                                                        }
+                                                        else
+                                                        {
+                                                            builder1.AddAttribute(1, att1.Key, att1.Value);
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        builder1.CloseComponent();
+                                    }
+                                }));
+                            } else {
+                                builder.AddAttribute(1, att.Key, att.Value);
+                            }
+                        }
+                    }
+                }
+                builder.CloseComponent();
+                Console.WriteLine("--------------");
+            }
+        }
+    }
+
+    private RenderFragment dc { get; set; }
+
+    protected override void OnInitialized()
+    {
+        // 创建动态组件的实例
+        dc = builder =>
+        {
+            builder.OpenComponent(0, typeof(DynamicComponent));
+            builder.CloseComponent();
+        };
+    }
+}
