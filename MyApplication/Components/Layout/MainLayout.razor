@@ -4,31 +4,217 @@
 <MyMudThemeProvider />
 <MyMudProviders />
 
-<MudLayout>
-    <MudAppBar Elevation="0">
-		<MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-        <MudSpacer />
-        <MudIconButton Icon="@Icons.Custom.Brands.MudBlazor" Color="Color.Inherit" Link="https://mudblazor.com/" Target="_blank" />
-        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Link="https://github.com/MudBlazor/MudBlazor/" Target="_blank" />
-    </MudAppBar>
-    <MudDrawer @bind-Open="_drawerOpen" Elevation="1">
-        <MudDrawerHeader>
-            <MudText Typo="Typo.h6">MudBlazorTemplates1</MudText>
-        </MudDrawerHeader>
-        <NavMenu />
-    </MudDrawer>
-    <MudMainContent>
-        <MudContainer MaxWidth="MaxWidth.Large" Class="my-16 pt-16">
-            @Body
-        </MudContainer>
-    </MudMainContent>
-</MudLayout>
+@using Microsoft.AspNetCore.Components;
+@using Microsoft.AspNetCore.Components.Rendering;
+@using Newtonsoft.Json;
+@using System.ComponentModel;
+@using Newtonsoft.Json.Linq;
+@using System;
+@* @using MudBlazor; *@
+@* @using MudBlazor.Icons; *@
+
+@* <h3>动态组件演示</h3> *@
+
+<div>
+    @dc
+</div>
 
 @code {
-    bool _drawerOpen = true;
 
-    void DrawerToggle()
+    public class DynamicComponent : ComponentBase
     {
-        _drawerOpen = !_drawerOpen;
+        void ProcessItem(dynamic item, RenderTreeBuilder builder)
+        {
+            foreach (var property in item) {
+                @* Console.WriteLine($"{property.Name}: {property.Value}"); *@
+                @* Console.WriteLine(property.Value.GetType()); *@
+                if (property.Value.Type is not null) {
+                    @* Console.WriteLine(property.Value.Type.ToString()); *@
+                }
+                
+                var t = property.Value.GetType().ToString();
+                if ( t == "Newtonsoft.Json.Linq.JObject") {
+                    ProcessItem(property.Value, builder);
+                    builder.CloseComponent();
+                } else if ( t == "Newtonsoft.Json.Linq.JArray") {
+                    @* Console.WriteLine(property.Name); *@
+                    if (property.Name == "ChildContent") {
+                        builder.AddAttribute(1, property.Name, (RenderFragment)(builder1 =>
+                        {
+                            foreach (var property1 in property.Value) {
+                                @* Console.WriteLine("property1");
+                                Console.WriteLine(property1); *@
+                                ProcessItem(property1, builder1);
+                            }
+                            @* foreach (var row2 in (List<IDictionary<string, object>>)att1.Value)
+                            {
+                                foreach (var entry2 in row2)
+                                {
+                                    Console.WriteLine($"{entry2.Key}: {entry2.Value}");
+                                    if (entry2.Key == "Content") {
+                                        builder2.AddContent(3, entry2.Value.ToString());
+                                    }
+                                }
+                            } *@
+                        }));  
+                    } else {
+                        foreach (var property1 in property.Value) {
+                            @* Console.WriteLine(property1); *@
+                            ProcessItem(property1, builder);
+                        }
+                    }
+                } else if ( t == "Newtonsoft.Json.Linq.JValue") {
+                    if (property.Name == "Type") {
+                        builder.OpenComponent(0, Type.GetType(property.Value.ToString()));
+                        if (property.Value.ToString() == "MudBlazor.MudButton, MudBlazor") {
+                            @* builder.AddAttribute(1, "OnClick", EventCallback.Factory.Create(this, OnButtonClick)); *@
+                            @* builder.AddAttribute(1, "OnClick", Microsoft.AspNetCore.Components.EventCallback.Factory.Create<Microsoft.AspNetCore.Components.UIMouseEventArgs>(this, OnButtonClick)); *@
+                            string d = property.Value.ToString();
+                            builder.AddAttribute(1, "OnClick", 
+                                Microsoft.AspNetCore.Components.CompilerServices.RuntimeHelpers.TypeCheck<
+                                    Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.Web.MouseEventArgs>>(
+                                        Microsoft.AspNetCore.Components.EventCallback.Factory.Create<Microsoft.AspNetCore.Components.Web.MouseEventArgs>(
+                                            this, (e) => OnButtonClick(e, d))));
+                        }
+                    }
+                    else {
+                        @* Console.WriteLine($"{property.Name}: {property.Value}"); *@
+                        if (property.Name == "Content") {
+                            builder.AddContent(3, property.Value.ToString());
+                        } else {
+                            if (property.Name == "Color" || property.Name == "IconColor") {
+                                builder.AddAttribute(1, property.Name, (Color)Enum.Parse(typeof(Color), property.Value.ToString()));
+                            }
+                            else if (property.Name == "Variant") {
+                                builder.AddAttribute(1, property.Name, (Variant)Enum.Parse(typeof(Variant), property.Value.ToString()));
+                            }
+                            else if (property.Name == "Size") {
+                                builder.AddAttribute(1, property.Name, (Size)Enum.Parse(typeof(Size), property.Value.ToString()));
+                            }
+                            else if (property.Name == "Icon" || property.Name == "StartIcon") {
+                                var val = property.Value.ToString();
+                                if (val.IndexOf("Icons.Material.Filled") == 0) {
+                                    var iconName = val.Replace("Icons.Material.Filled.", "");
+                                    var iconField = typeof(Icons.Material.Filled).GetField(iconName);
+                                    if (iconField is not null) {
+                                        builder.AddAttribute(1, property.Name, iconField.GetValue(null));
+                                    } 
+                                }
+                            }
+                            else {
+                                if (property.Value.Type.ToString() == "String") {
+                                    builder.AddAttribute(1, property.Name, property.Value.ToString());
+                                } else if (property.Value.Type.ToString() == "Integer") {
+                                    builder.AddAttribute(1, property.Name, Convert.ToInt32(property.Value));
+                                } else if (property.Value.Type.ToString() == "Boolean") {
+                                    builder.AddAttribute(1, property.Name, Convert.ToBoolean(property.Value));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        protected override void BuildRenderTree(RenderTreeBuilder builder)
+        {
+            using (var sr = new StreamReader(@"test.json", System.Text.Encoding.UTF8))
+            {
+                // 変数 jsonReadData にファイルの内容を代入 
+                var jsonReadData = sr.ReadToEnd();
+                @* Console.WriteLine(jsonReadData); *@
+                // デシリアライズして person にセット
+                var jsonString = JsonConvert.DeserializeObject(jsonReadData).ToString();
+                @* Console.WriteLine(jsonString); *@
+
+                dynamic result = JsonConvert.DeserializeObject(jsonString);
+                foreach (var item in result)
+                {
+                    ProcessItem(item, builder);
+                }
+            }
+
+            @* builder.OpenComponent(0, Type.GetType("MudBlazor.MudPaper, MudBlazor"));
+            builder.AddAttribute(1, "Class", "pa-16 ma-2");
+            builder.AddAttribute(1, "Height", "300px");
+            builder.AddAttribute(1, "Width", "300px");
+            builder.AddAttribute(1, "Elevation", 3);
+            builder.AddAttribute(2, "ChildContent", (RenderFragment)(builder1 =>
+            {
+                builder1.OpenComponent(0, Type.GetType("MudBlazor.MudButton, MudBlazor"));
+                builder1.AddAttribute(1, "Color", (Color)Enum.Parse(typeof(Color), "Primary"));
+                builder1.AddAttribute(1, "Variant", (Variant)Enum.Parse(typeof(Variant), "Filled"));
+                builder1.AddAttribute(2, "ChildContent", (RenderFragment)(buttonBuilder =>
+                {
+                    buttonBuilder.AddContent(3, "Click me");
+                }));
+                builder1.CloseComponent();
+            }));
+            builder.CloseComponent(); *@
+
+            @* string json = @"
+            [
+                {
+                    ""Type"": ""MudBlazor.MudPaper, MudBlazor"",
+                    ""Attribute"": {
+                        ""Class"": ""pa-16 ma-2"",
+                        ""Height"": ""300px"",
+                        ""Width"": ""300px"",
+                        ""Elevation"": 3,
+                        ""ChildContent"": [
+                            {
+                                ""Type"": ""MudBlazor.MudRating, MudBlazor"",
+                                ""Attribute"": {
+                                    ""SelectedValue"": 2
+                                }
+                            },
+                            {
+                                ""Type"": ""MudBlazor.MudButton, MudBlazor"",
+                                ""Attribute"": {
+                                    ""Color"": ""Primary"",
+                                    ""Variant"": ""Filled"",
+                                    ""ChildContent"": [
+                                        {
+                                            ""Content"": ""Click me""
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]";
+
+            dynamic result = JsonConvert.DeserializeObject(json);
+            foreach (var item in result)
+            {
+                ProcessItem(item, builder);
+            } *@
+        }
+    }
+
+    private RenderFragment dc { get; set; }
+
+    protected override void OnInitialized()
+    {
+        // 创建动态组件的实例
+        dc = builder =>
+        {
+            builder.OpenComponent(0, typeof(DynamicComponent));
+            builder.CloseComponent();
+        };
+    }
+    
+    private static void OnButtonClick1()
+    {
+        // 处理按钮点击事件的逻辑
+        Console.WriteLine("Button clicked1!");
+    }
+
+    private static void OnButtonClick(MouseEventArgs e, string additionalParameter)
+    {
+        Console.WriteLine("Button clicked!");
+        // 处理按钮点击事件的逻辑，并使用传递的参数
+        Console.WriteLine($"Button clicked! X: {e.ClientX}, Y: {e.ClientY}, Additional Parameter: {additionalParameter}");
     }
 }

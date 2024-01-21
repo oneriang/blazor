@@ -1,0 +1,169 @@
+[
+    {
+        "Type": "MudBlazor.MudLayout, MudBlazor",
+        "Attribute": {
+            "ChildContent": [
+                {
+                    "Type": "MudBlazor.MudAppBar, MudBlazor",
+                    "Attribute": {
+                        "ChildContent": [
+                            {
+                                "Type": "MudBlazor.MudIconButton, MudBlazor",
+                                "Attribute": {
+                                    "Icon": "Icons.Material.Filled.Menu"
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    "Type": "MudBlazor.MudDrawer, MudBlazor",
+                    "Attribute": {
+                        "Open": true,
+                        "ChildContent": [
+                            {
+                                "Type": "MudBlazor.MudNavMenu, MudBlazor",
+                                "Attribute": {
+                                    "ChildContent": [
+                                        {
+                                            "Type": "MudBlazor.MudNavLink, MudBlazor",
+                                            "Attribute": {
+                                                "ChildContent": [
+                                                    {
+                                                        "Content": "Home"
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "Type": "MudBlazor.MudNavLink, MudBlazor",
+                                            "Attribute": {
+                                                "ChildContent": [
+                                                    {
+                                                        "Content": "Home1"
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "Type": "MudBlazor.MudNavLink, MudBlazor",
+                                            "Attribute": {
+                                                "ChildContent": [
+                                                    {
+                                                        "Content": "Home2"
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    "Type": "MudBlazor.MudMainContent, MudBlazor",
+                    "Attribute": {
+                        "ChildContent": [
+                            
+                        ]
+                    }
+                }
+            ]
+        }
+    },
+    {
+        "Type": "MudBlazor.MudPaper, MudBlazor",
+        "Attribute": {
+            "Class": "pa-16 ma-2",
+            "Height": "300px",
+            "Width": "300px",
+            "Elevation": 3,
+            "ChildContent": [
+                {
+                    "Type": "MudBlazor.MudRating, MudBlazor",
+                    "Attribute": {
+                        "SelectedValue": 3
+                    }
+                },
+                {
+                    "Type": "MudBlazor.MudButton, MudBlazor",
+                    "Attribute": {
+                        "Color": "Primary",
+                        "Variant": "Filled",
+                        "Size": "Large",
+                        "Disabled": false,
+                        "FullWidth": true,
+                        "Href": "https://github.com/MudBlazor/MudBlazor",
+                        "Target": "_blank",
+                        "ChildContent": [
+                            {
+                                "Content": "Click me"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "Type": "MudBlazor.MudButton, MudBlazor",
+                    "Attribute": {
+                        "Color": "Primary",
+                        "Variant": "Filled",
+                        "Size": "Small",
+                        "Disabled": false,
+                        "FullWidth": true,
+                        "StartIcon": "Icons.Material.Filled.Favorite",
+                        "IconColor": "Secondary",
+                        "ChildContent": [
+                            {
+                                "Content": "Click me"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "Type": "MudBlazor.MudIcon, MudBlazor",
+                    "Attribute": {
+                        "Title": "Favorite",
+                        "Icon": "Icons.Material.Filled.Api"
+                    }
+                }
+            ]
+        }
+    },
+    {
+        "Type": "MudBlazor.MudFab, MudBlazor",
+        "Attribute": {
+            "Color": "Primary",
+            "StartIcon": "Icons.Material.Filled.Add"
+        }
+    },
+    {
+        "Type": "MudBlazor.MudButtonGroup, MudBlazor",
+        "Attribute": {
+            "Color": "Primary",
+            "Variant": "Outlined",
+            "ChildContent": [
+                {
+                    "Type": "MudBlazor.MudButton, MudBlazor",
+                    "Attribute": {
+                        "ChildContent": [
+                            {
+                                "Content": "btn1"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "Type": "MudBlazor.MudButton, MudBlazor",
+                    "Attribute": {
+                        "ChildContent": [
+                            {
+                                "Content": "btn2"
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    }
+]
