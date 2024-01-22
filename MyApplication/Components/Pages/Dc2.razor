@@ -1,0 +1,59 @@
+﻿@page "/dc2"
+@using Microsoft.AspNetCore.Components;
+@using Microsoft.AspNetCore.Components.Rendering;
+
+@code {
+ 
+public class ChildComponent : ComponentBase
+{
+    private int _yourScore = 0;
+
+    [Parameter]
+    public EventCallback<int> YourScoreChanged
+    {
+        get;
+        set;
+    }
+
+    [Parameter]
+    public int YourScore
+    {
+        get
+        {
+            return _yourScore;
+        }
+        set
+        {
+            if (_yourScore != value)
+            {
+                _yourScore = value;
+                YourScoreChanged.InvokeAsync(_yourScore);
+            }
+        }
+    }
+
+    protected override void BuildRenderTree(RenderTreeBuilder __builder)
+    {
+        __builder.OpenElement(0, "div");
+        __builder.AddAttribute(1, "class", "container bg-secondary");
+        __builder.AddMarkupContent(2, "\r\n  ");
+        __builder.AddMarkupContent(3, "<h2>Child Component</h2>\r\n\r\n  ");
+        __builder.OpenElement(4, "p");
+        __builder.AddContent(5, "YourScore: ");
+        __builder.AddContent(6, YourScore);
+        __builder.CloseElement();
+        __builder.AddMarkupContent(7, "\r\n  ");
+        __builder.OpenElement(8, "input");
+        __builder.AddAttribute(9, "type", "text");
+        __builder.AddAttribute(10, "value", BindConverter.FormatValue(YourScore));
+        __builder.AddAttribute(11, "onchange", EventCallback.Factory.CreateBinder(this, delegate(int __value)
+        {
+            YourScore = __value;
+        }, YourScore));
+        __builder.SetUpdatesAttributeName("value");
+        __builder.CloseElement();
+        __builder.AddMarkupContent(12, "\r\n");
+        __builder.CloseElement();
+    }
+}   
+}
