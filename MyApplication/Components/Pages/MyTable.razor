@@ -6,17 +6,35 @@
 
 @code {
     [Parameter]
-    public string Items { get; set; }
-    [Parameter]
-    public bool MultiSelection { get; set; }
+    public List<Dictionary<string, object>> DataList { 
+        get{
+            return _dataList;
+        }
+        set{
+            cols = new List<string>();
+            _dataList = value;
 
-    private static List<Dictionary<string, object>> dataList;
+            foreach (var item in _dataList)
+            {
+                foreach (var k in item.Keys)
+                {
+                    cols.Add(k.ToString());
+                }
+                break;
+            }
+        }
+    }
+    [Parameter]
+    public bool MultiSelection { get; set; } = false;
+
+    private static List<Dictionary<string, object>> _dataList;
     private static List<string> cols = new List<string>();
 
     protected override void OnInitialized()
     {
         cols = new List<string>();
         
+        @*
         // 変数 jsonReadData にファイルの内容を代入
         var jsonReadData = Items;
         // デシリアライズして person にセット
@@ -24,9 +42,13 @@
 
         dataList = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(jsonString);
 
-        @* Console.WriteLine(Type.GetType(dataList).ToString()); *@
+        Console.WriteLine(Type.GetType(dataList).ToString()); 
 
-        foreach (var item in dataList)
+        *@
+
+        _dataList = DataList;
+
+        foreach (var item in _dataList)
         {
             foreach (var k in item.Keys)
             {
@@ -37,7 +59,7 @@
     }
 }
 
-<MudTable Items="@dataList" MultiSelection="@MultiSelection">
+<MudTable Items="@_dataList" MultiSelection="@MultiSelection">
     <HeaderContent>
         @foreach (var k in cols)
         {

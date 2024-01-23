@@ -5,6 +5,51 @@
 
 <PageTitle>Home</PageTitle>
 
+@* <DynamicComponent Type="@componentType" Parameters="@parameters" />
+
+@code {
+    private Type componentType = Type.GetType("MudBlazor.MudButton, MudBlazor");
+    
+    private IDictionary<string, object> parameters = new Dictionary<string, object>
+    {
+        { "ChildContent", (RenderFragment)(builder =>
+            {
+                builder.AddContent(0, "Click me");
+            })
+        },
+        { "Color", Color.Primary },
+        { "Variant", Variant.Filled }
+        // Add other parameters as needed
+    };
+} *@
+
+<DynamicComponent Type="@componentType" Parameters="@parameters" />
+
+@code {
+    private Type componentType = Type.GetType("MudBlazor.MudPaper, MudBlazor");
+    
+    private IDictionary<string, object> parameters = new Dictionary<string, object>
+    {
+        { "ChildContent", (RenderFragment)(builder =>
+            {
+                // 在MudPaper中添加MudButton
+                builder.OpenComponent(0, Type.GetType("MudBlazor.MudButton, MudBlazor"));
+                builder.AddAttribute(1, "Color", MudBlazor.Color.Primary);
+                builder.AddAttribute(1, "Variant", MudBlazor.Variant.Filled);
+                builder.AddAttribute(2, "ChildContent", (RenderFragment)(buttonBuilder =>
+                {
+                    buttonBuilder.AddContent(3, "Click me");
+                }));
+                builder.CloseComponent();
+            })
+        },
+        { "Class", "pa-16 ma-2" },
+        { "Height", "300px" },
+        { "Width", "300px" },
+        { "Elevation", 3 }
+    };
+}
+
 @if (tableList == null)
 {
     <p>Loading...</p>
@@ -30,7 +75,6 @@ else
 }
 else
 {
-    <MyTable DataList="@data" />
     <table class="table">
         <thead>
             <tr>
@@ -62,7 +106,7 @@ else
     private TableInfo selectedTable;
     string? listboxValue;
 
-    private int primaryKeyValue = 1;
+    private int primaryKeyValue = 1; // Replace with actual primary key value
 
     private List<Dictionary<string, object>> data;
 
@@ -112,8 +156,22 @@ else
 
     private List<Dictionary<string, object>> QueryData()
     {
+        @* return dynamicEntity.Select(connectionString, tableName); *@
+
+        Console.WriteLine("--------------");
+        Console.WriteLine(tableName);
         List<Dictionary<string, object>> queryResults = dynamicEntity.Select(connectionString, tableName);
 
+@*
+        foreach (var row in queryResults)
+        {
+            foreach (var entry in row)
+            {
+                Console.WriteLine($"{entry.Key}: {entry.Value}");
+            }
+            Console.WriteLine("--------------");
+        }
+*@
         return queryResults;
     }
 
@@ -121,9 +179,9 @@ else
     {
         // Replace with the actual logic to get primary key values
         return new Dictionary<string, object>
-        {
-            {"PrimaryKeyColumn", primaryKeyValue}
-        };
+            {
+                {"PrimaryKeyColumn", primaryKeyValue}
+            };
     }
 }
 
