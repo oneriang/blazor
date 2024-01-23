@@ -1,0 +1,53 @@
+﻿@page "/abc"
+@using Microsoft.AspNetCore.Components.Rendering;
+@using Newtonsoft.Json;
+@using System.ComponentModel;
+@using Newtonsoft.Json.Linq;
+@using System;
+
+@code {
+    private static List<Dictionary<string, object>> dataList;
+    private static List<string> cols = new List<string>();
+
+    protected override void OnInitialized()
+    {
+        cols = new List<string>();
+        using (var sr = new StreamReader(@"data.json", System.Text.Encoding.UTF8))
+        {
+            // 変数 jsonReadData にファイルの内容を代入
+            var jsonReadData = sr.ReadToEnd();
+            // デシリアライズして person にセット
+            var jsonString = JsonConvert.DeserializeObject(jsonReadData).ToString();
+
+            dataList = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(jsonString);
+
+            @* Console.WriteLine(Type.GetType(dataList).ToString()); *@
+
+            foreach (var item in dataList)
+            {
+                foreach (var k in item.Keys)
+                {
+                    cols.Add(k.ToString());
+                }
+                break;
+            }
+        }
+    }
+}
+
+<MudTable Items="@dataList">
+    <HeaderContent>
+        @foreach (var k in cols)
+        {
+            <MudTh>@k</MudTh>
+        }
+    </HeaderContent>
+    <RowTemplate>
+        @foreach (var k in cols)
+        {
+            <MudTd>@context[k]</MudTd>
+        }
+    </RowTemplate>
+</MudTable>
+
+<MyTable dataList="@dataList" cols="@cols"></MyTable>

@@ -1,0 +1,21 @@
+﻿@code {
+    [Parameter]
+    public List<Dictionary<string, object>> dataList { get; set; }
+    [Parameter]
+    public List<string> cols { get; set; }
+}
+
+<MudTable Items="@dataList">
+    <HeaderContent>
+        @foreach (var k in cols)
+        {
+            <MudTh>@k</MudTh>
+        }
+    </HeaderContent>
+    <RowTemplate>
+        @foreach (var k in cols)
+        {
+            <MudTd>@context[k]</MudTd>
+        }
+    </RowTemplate>
+</MudTable>

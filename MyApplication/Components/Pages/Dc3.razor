@@ -1,0 +1,340 @@
+﻿@page "/dc3"
+
+@using Microsoft.AspNetCore.Components;
+@using Microsoft.AspNetCore.Components.Rendering;
+@using Newtonsoft.Json;
+@using System.ComponentModel;
+@using Newtonsoft.Json.Linq;
+@using System;
+
+@* @using System; *@
+@* @using Microsoft.AspNetCore.Components; *@
+@using Microsoft.AspNetCore.Components.CompilerServices;
+@* @using Microsoft.AspNetCore.Components.Rendering; *@
+@using Microsoft.AspNetCore.Components.Routing;
+@using Microsoft.AspNetCore.Components.Web;
+@using MudBlazor;
+@using System.Collections.Generic;
+@* <h3>动态组件演示</h3> *@
+
+<div>
+    @dc
+</div>
+
+@code {
+
+    private RenderFragment dc { get; set; }
+
+    private string currentType { get; set; }
+
+    void ProcessItem(dynamic item, RenderTreeBuilder builder)
+    {
+        foreach (var property in item) {
+            if (property.Value.Type is not null) {
+            }
+            
+            var t = property.Value.GetType().ToString();
+            if ( t == "Newtonsoft.Json.Linq.JObject") {
+                if (property.Name != "Type" && property.Name != "Attribute") {
+                    var pv = property.Value;
+                    foreach (var k in pv) {
+                        Console.WriteLine(k.Name);
+                        if (k.Name == "Bind") {
+                            if (k.Value["Value"].Type.ToString() == "Boolean") {
+                                builder.AddAttribute(1, property.Name, Convert.ToBoolean(Values[k.Value["Id"].ToString()]));
+                                builder.AddAttribute(1, "Variant", RuntimeHelpers.TypeCheck(DrawerVariant.Temporary));
+                                if (currentType == "MudBlazor.MudCheckBox`1[System.Boolean], MudBlazor") {
+                                    builder.AddAttribute(1, "ValueChanged", 
+                                        RuntimeHelpers.TypeCheck(
+                                            EventCallback.Factory.Create(
+                                                this, 
+                                                RuntimeHelpers.CreateInferredEventCallback(
+                                                    this, 
+                                                    (bool __value) =>
+                                                    {
+                                                        _key = k.Value["Id"].ToString();
+                                                        open = __value;
+                                                    }, 
+                                                    open
+                                                )
+                                            )
+                                        )
+                                    );
+                                } else {
+                                    builder.AddAttribute(1, "OpenChanged", 
+                                        RuntimeHelpers.TypeCheck(
+                                            EventCallback.Factory.Create(
+                                                this, 
+                                                RuntimeHelpers.CreateInferredEventCallback(
+                                                    this, 
+                                                    (bool __value) =>
+                                                    {
+                                                        _key = k.Value["Id"].ToString();
+                                                        open = __value;
+                                                    }, 
+                                                    open
+                                                )
+                                            )
+                                        )
+                                    );
+                                }
+                            }
+                            if (k.Value["Value"].Type.ToString() == "String") {
+                                if (property.Name == "Content") {
+                                    builder.AddContent(3, Values[k.Value["Id"].ToString()]); 
+                                }
+                                else {
+                                    builder.AddAttribute(1, property.Name, Values[k.Value["Id"].ToString()]);
+                                    if (currentType == "MudBlazor.MudRadioGroup`1[System.String], MudBlazor") {
+                                        builder.AddAttribute(1, "ValueChanged", 
+                                            RuntimeHelpers.TypeCheck(
+                                                EventCallback.Factory.Create(
+                                                    this, 
+                                                    RuntimeHelpers.CreateInferredEventCallback(
+                                                        this, 
+                                                        (string __value) =>
+                                                        {
+                                                            _key = k.Value["Id"].ToString();
+                                                            str = __value;
+                                                        }, 
+                                                        str
+                                                    )
+                                                )
+                                            )
+                                        );
+                                    } else {
+                                        builder.AddAttribute(1, "TextChanged", 
+                                            RuntimeHelpers.TypeCheck(
+                                                EventCallback.Factory.Create(
+                                                    this, 
+                                                    RuntimeHelpers.CreateInferredEventCallback(
+                                                        this, 
+                                                        (string __value) =>
+                                                        {
+                                                            _key = k.Value["Id"].ToString();
+                                                            str = __value;
+                                                        }, 
+                                                        str
+                                                    )
+                                                )
+                                            )
+                                        );
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } 
+                else {
+                    ProcessItem(property.Value, builder);
+                    builder.CloseComponent();
+                }
+            } else if ( t == "Newtonsoft.Json.Linq.JArray") {
+                if (property.Name == "ChildContent") {
+                    builder.AddAttribute(1, property.Name, (RenderFragment)(builder1 =>
+                    {
+                        foreach (var property1 in property.Value) {
+                            ProcessItem(property1, builder1);
+                        }
+                    }));  
+                }
+                else {
+                    foreach (var property1 in property.Value) {
+                        ProcessItem(property1, builder);
+                    }
+                }
+            } else if ( t == "Newtonsoft.Json.Linq.JValue") {
+                if (property.Name == "Type") {
+                    currentType = property.Value.ToString();
+                    Console.WriteLine(property.Value);
+                    if (property.Value.ToString().IndexOf("MudTable") > -1) {
+                        builder.OpenComponent(0, typeof(MyTable));
+                    }
+                    else {
+                        builder.OpenComponent(0, Type.GetType(property.Value.ToString()));
+                    }
+                    if (property.Value.ToString() == "MudBlazor.MudButton, MudBlazor") {
+                        builder.AddAttribute(1, "OnClick", EventCallback.Factory.Create<MouseEventArgs>((object)this, (Action)Calc));
+                    }
+                    if (property.Value.ToString() == "MudBlazor.MudIconButton, MudBlazor") {
+                        builder.AddAttribute(1, "OnClick", EventCallback.Factory.Create<MouseEventArgs>((object)this, (Action)OpenDrawer));
+                    }
+                }
+                else {
+                    if (property.Name == "Content") {
+                        builder.AddContent(3, property.Value.ToString());
+                    } else {
+                        if (property.Name == "Color" || property.Name == "IconColor") {
+                            builder.AddAttribute(1, property.Name, (Color)Enum.Parse(typeof(Color), property.Value.ToString()));
+                        }
+                        else if (property.Name == "Variant") {
+                            builder.AddAttribute(1, property.Name, (Variant)Enum.Parse(typeof(Variant), property.Value.ToString()));
+                        }
+                        else if (property.Name == "Size") {
+                            builder.AddAttribute(1, property.Name, (Size)Enum.Parse(typeof(Size), property.Value.ToString()));
+                        }
+                        else if (property.Name == "Typo") {
+                            builder.AddAttribute(1, property.Name, (Typo)Enum.Parse(typeof(Typo), property.Value.ToString()));
+                        }
+                        else if (property.Name == "Icon" || property.Name == "StartIcon") {
+                            var val = property.Value.ToString();
+                            if (val.IndexOf("Icons.Material.Filled") == 0) {
+                                var iconName = val.Replace("Icons.Material.Filled.", "");
+                                var iconField = typeof(Icons.Material.Filled).GetField(iconName);
+                                if (iconField is not null) {
+                                    builder.AddAttribute(1, property.Name, iconField.GetValue(null));
+                                } 
+                            }
+                        }
+                        else {
+                            if (property.Value.Type.ToString() == "String") {
+                                if (currentType == "MudBlazor.MudTable`1[dynamic], MudBlazor") {
+                                    if (property.Name == "Items") {
+                                        Console.WriteLine(property.Value);
+                                        @* builder.AddAttribute(1, property.Name, JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(property.Value.ToString())); *@
+                                        builder.AddAttribute(1, property.Name, property.Value.ToString());
+                                    }
+                                } 
+                                else {
+                                    builder.AddAttribute(1, property.Name, property.Value.ToString());
+                                }
+                            } else if (property.Value.Type.ToString() == "Integer") {
+                                builder.AddAttribute(1, property.Name, Convert.ToInt32(property.Value));
+                            } else if (property.Value.Type.ToString() == "Boolean") {
+                                builder.AddAttribute(1, property.Name, Convert.ToBoolean(property.Value));
+                            } else {
+                                Console.WriteLine(property.Value.Type.ToString());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void OnInput1(ChangeEventArgs e, string key)
+    {
+        Console.WriteLine(e);
+        Console.WriteLine(key);
+        Console.WriteLine($"OnInput: \"{e.Value}\"");
+    }
+
+    dynamic result;
+
+    protected override void OnInitialized()
+    {
+        using (var sr = new StreamReader(@"test.json", System.Text.Encoding.UTF8))
+        {
+            // 変数 jsonReadData にファイルの内容を代入 
+            var jsonReadData = sr.ReadToEnd();
+            // デシリアライズして person にセット
+            var jsonString = JsonConvert.DeserializeObject(jsonReadData).ToString();
+
+            result = JsonConvert.DeserializeObject(jsonString);
+
+            Values["openDrawer"] = true;
+            Values["textField1"] = "";
+            Values["textField2"] = "";
+            Values["SelectedOption"] = "";
+            Values["checkbox1"] = false;
+            Values["select1"] = "";
+        }
+        // 创建动态组件的实例
+        dc = builder =>
+        {            
+            @* using (var sr = new StreamReader(@"test.json", System.Text.Encoding.UTF8))
+            {
+                // 変数 jsonReadData にファイルの内容を代入 
+                var jsonReadData = sr.ReadToEnd();
+                // デシリアライズして person にセット
+                var jsonString = JsonConvert.DeserializeObject(jsonReadData).ToString();
+
+                dynamic result = JsonConvert.DeserializeObject(jsonString);
+                foreach (var item in result)
+                {
+                    ProcessItem(item, builder);
+                }
+            } *@
+            foreach (var item in result)
+            {
+                ProcessItem(item, builder);
+            }
+        };
+    }
+    
+    public Dictionary<string, object> Values = new Dictionary<string, object> (){};
+
+    public int Value1 { get; set; } = 0;
+    
+    public int Value2 { get; set; } = 0;
+
+    private string _key = "";
+    private bool _open;
+
+	private bool open
+    {
+        get
+        {
+            return _open; // 外部から取得される
+        }       
+        set
+        {
+            _open = value; // 外部から設定する
+            Console.WriteLine("Button clicked!");
+            Console.WriteLine(_key);
+            Console.WriteLine(_open);
+            Values[_key] = _open;
+        }      
+    }
+    
+    private string _str;
+
+	private string str
+    {
+        get
+        {
+            return _str; // 外部から取得される
+        }       
+        set
+        {
+            _str = value; // 外部から設定する
+            Console.WriteLine("Button clicked!");
+            Console.WriteLine(_key);
+            Console.WriteLine(_str);
+            Values[_key] = _str;
+        }      
+    }
+    
+    public void OpenDrawer()
+    {
+        Console.WriteLine("OpenDrawer-----------");
+        _key = "openDrawer";
+        open = true; 
+    }
+
+    public int Result { get; set; } = 0;
+    public void Calc() {
+        Console.WriteLine("Calc");
+        this.Result = this.Value1 + this.Value2;
+        Console.WriteLine($"Value1:{this.Value1}");
+        Console.WriteLine($"Value2:{this.Value2}");
+        Console.WriteLine($"Result:{this.Result}");
+        foreach (var i in Values) {
+            Console.WriteLine($"{i.Key}:{i.Value}");
+            @* Console.WriteLine(i.Value); *@
+        }
+    }
+
+    private static void OnButtonClick1()
+    {
+        // 处理按钮点击事件的逻辑
+        Console.WriteLine("Button clicked1!");
+    }
+
+    private static void OnButtonClick(MouseEventArgs e, string additionalParameter)
+    {
+        Console.WriteLine("Button clicked!");
+        // 处理按钮点击事件的逻辑，并使用传递的参数
+        Console.WriteLine($"Button clicked! X: {e.ClientX}, Y: {e.ClientY}, Additional Parameter: {additionalParameter}");
+    }
+}

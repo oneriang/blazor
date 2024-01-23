@@ -1,0 +1,186 @@
+﻿@inherits LayoutComponentBase
+@using MyApplication.Components
+
+<MyMudThemeProvider />
+<MyMudProviders />
+
+@using System;
+@using Microsoft.AspNetCore.Components;
+@using Microsoft.AspNetCore.Components.CompilerServices;
+@using Microsoft.AspNetCore.Components.Rendering;
+@using Microsoft.AspNetCore.Components.Routing;
+@using Microsoft.AspNetCore.Components.Web;
+@using MudBlazor;
+@* using MudBlazor.Docs.Shared; *@
+
+<div>
+    @dc
+</div>
+
+@code{
+    
+    private string _key = "";
+    private bool _open;
+
+	private bool open
+    {
+        get
+        {
+            return _open; // 外部から取得される
+        }       
+        set
+        {
+            _open = value; // 外部から設定する
+            Console.WriteLine("Button clicked!");
+            Console.WriteLine(_open);
+            Values[_key] = _open;
+        }      
+    }
+
+	private Anchor anchor;
+
+    private RenderFragment dc { get; set; }
+
+    private Dictionary<string, object> Values = new Dictionary<string, object> () 
+    {
+        { "Open", true }
+    };
+
+    protected override void OnInitialized()
+    {
+        dc = builder =>
+        {
+
+            builder.OpenComponent<MudButton>(0);
+            builder.AddComponentParameter(1, "Variant", RuntimeHelpers.TypeCheck(Variant.Text));
+            builder.AddComponentParameter(2, "OnClick", RuntimeHelpers.TypeCheck(EventCallback.Factory.Create<MouseEventArgs>((object)this, (Action)delegate
+            {
+                OpenDrawer(Anchor.Start);
+            })));
+            builder.AddAttribute(3, "ChildContent", (RenderFragment)delegate(RenderTreeBuilder builder2)
+            {
+                builder2.AddContent(4, "Start");
+            });
+            builder.CloseComponent();
+            @* builder.AddMarkupContent(5, "\n");
+            builder.OpenComponent<MudButton>(6);
+            builder.AddComponentParameter(7, "Variant", RuntimeHelpers.TypeCheck(Variant.Text));
+            builder.AddComponentParameter(8, "OnClick", RuntimeHelpers.TypeCheck(EventCallback.Factory.Create<MouseEventArgs>((object)this, (Action)delegate
+            {
+                OpenDrawer(Anchor.End);
+            })));
+            builder.AddAttribute(9, "ChildContent", (RenderFragment)delegate(RenderTreeBuilder builder2)
+            {
+                builder2.AddContent(10, "End");
+            });
+            builder.CloseComponent();
+            builder.AddMarkupContent(11, "\n");
+            builder.OpenComponent<MudButton>(12);
+            builder.AddComponentParameter(13, "Variant", RuntimeHelpers.TypeCheck(Variant.Text));
+            builder.AddComponentParameter(14, "OnClick", RuntimeHelpers.TypeCheck(EventCallback.Factory.Create<MouseEventArgs>((object)this, (Action)delegate
+            {
+                OpenDrawer(Anchor.Top);
+            })));
+            builder.AddAttribute(15, "ChildContent", (RenderFragment)delegate(RenderTreeBuilder builder2)
+            {
+                builder2.AddContent(16, "Top");
+            });
+            builder.CloseComponent();
+            builder.AddMarkupContent(17, "\n");
+            builder.OpenComponent<MudButton>(18);
+            builder.AddComponentParameter(19, "Variant", RuntimeHelpers.TypeCheck(Variant.Text));
+            builder.AddComponentParameter(20, "OnClick", RuntimeHelpers.TypeCheck(EventCallback.Factory.Create<MouseEventArgs>((object)this, (Action)delegate
+            {
+                OpenDrawer(Anchor.Bottom);
+            })));
+            builder.AddAttribute(21, "ChildContent", (RenderFragment)delegate(RenderTreeBuilder builder2)
+            {
+                builder2.AddContent(22, "Bottom");
+            });
+            builder.CloseComponent();
+            builder.AddMarkupContent(23, "\n\n"); *@
+            builder.OpenComponent<MudDrawer>(24);
+            builder.AddComponentParameter(25, "Anchor", RuntimeHelpers.TypeCheck(anchor));
+            builder.AddComponentParameter(26, "Elevation", RuntimeHelpers.TypeCheck(1));
+            builder.AddComponentParameter(27, "Variant", RuntimeHelpers.TypeCheck(DrawerVariant.Temporary));
+            @* builder.AddComponentParameter(28, "Open", RuntimeHelpers.TypeCheck(open)); *@
+            builder.AddComponentParameter(28, "Open", RuntimeHelpers.TypeCheck(Values["Open"]));
+            @* builder.AddComponentParameter(29, "OpenChanged", RuntimeHelpers.TypeCheck(EventCallback.Factory.Create(this, RuntimeHelpers.CreateInferredEventCallback(this, delegate(bool __value)
+            {
+                open = __value;
+            }, open)))); *@
+            builder.AddComponentParameter(29, "OpenChanged", 
+                RuntimeHelpers.TypeCheck(
+                    EventCallback.Factory.Create(
+                        this, 
+                        RuntimeHelpers.CreateInferredEventCallback(
+                            this, 
+                            (bool __value) =>
+                            {
+                                @* Values["Open"] = __value; *@
+                                _key = "Open";
+                                open = __value;
+                            }, 
+                            @* Values["Open"] *@
+                            open
+                        )
+                    )
+                )
+            );
+            builder.AddAttribute(30, "ChildContent", (RenderFragment)delegate(RenderTreeBuilder builder2)
+            {
+                builder2.OpenComponent<MudDrawerHeader>(31);
+                builder2.AddAttribute(32, "ChildContent", (RenderFragment)delegate(RenderTreeBuilder builder3)
+                {
+                    builder3.OpenComponent<MudText>(33);
+                    builder3.AddComponentParameter(34, "Typo", RuntimeHelpers.TypeCheck(Typo.h6));
+                    builder3.AddAttribute(35, "ChildContent", (RenderFragment)delegate(RenderTreeBuilder builder4)
+                    {
+                        builder4.AddContent(36, "My App");
+                    });
+                    builder3.CloseComponent();
+                });
+                builder2.CloseComponent();
+                builder2.AddMarkupContent(37, "\n    ");
+                builder2.OpenComponent<MudNavMenu>(38);
+                builder2.AddAttribute(39, "ChildContent", (RenderFragment)delegate(RenderTreeBuilder builder3)
+                {
+                    builder3.OpenComponent<MudNavLink>(40);
+                    builder3.AddComponentParameter(41, "Match", RuntimeHelpers.TypeCheck(NavLinkMatch.All));
+                    builder3.AddAttribute(42, "ChildContent", (RenderFragment)delegate(RenderTreeBuilder builder4)
+                    {
+                        builder4.AddContent(43, "Store");
+                    });
+                    builder3.CloseComponent();
+                    builder3.AddMarkupContent(44, "\n        ");
+                    builder3.OpenComponent<MudNavLink>(45);
+                    builder3.AddComponentParameter(46, "Match", RuntimeHelpers.TypeCheck(NavLinkMatch.All));
+                    builder3.AddAttribute(47, "ChildContent", (RenderFragment)delegate(RenderTreeBuilder builder4)
+                    {
+                        builder4.AddContent(48, "Library");
+                    });
+                    builder3.CloseComponent();
+                    builder3.AddMarkupContent(49, "\n        ");
+                    builder3.OpenComponent<MudNavLink>(50);
+                    builder3.AddComponentParameter(51, "Match", RuntimeHelpers.TypeCheck(NavLinkMatch.All));
+                    builder3.AddAttribute(52, "ChildContent", (RenderFragment)delegate(RenderTreeBuilder builder4)
+                    {
+                        builder4.AddContent(53, "Community");
+                    });
+                    builder3.CloseComponent();
+                });
+                builder2.CloseComponent();
+            });
+            builder.CloseComponent();
+        };
+	}
+
+    private void a() {
+        
+    }
+	private void OpenDrawer(Anchor anchor)
+	{
+		open = true;
+		this.anchor = anchor;
+	}
+}

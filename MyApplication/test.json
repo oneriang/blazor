@@ -1,86 +1,149 @@
 [
     {
-        "Type": "MudBlazor.MudLayout, MudBlazor",
+        "Type": "MudBlazor.MudPaper, MudBlazor",
+        "Attribute": {
+            "Class": "pa-16 ma-2",
+            "Height": "300px",
+            "Width": "300px",
+            "Elevation": 3,
+            "ChildContent": [
+                {
+                    "Type": "MudBlazor.MudRating, MudBlazor",
+                    "Attribute": {
+                        "SelectedValue": 3
+                    }
+                },
+                {
+                    "Type": "MudBlazor.MudButton, MudBlazor",
+                    "Attribute": {
+                        "Color": "Primary",
+                        "Variant": "Filled",
+                        "Size": "Large",
+                        "Disabled": false,
+                        "FullWidth": true,
+                        "Href": "https://github.com/MudBlazor/MudBlazor",
+                        "Target": "_blank",
+                        "ChildContent": [
+                            {
+                                "Content": "Click me"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "Type": "MudBlazor.MudButton, MudBlazor",
+                    "Attribute": {
+                        "Color": "Primary",
+                        "Variant": "Filled",
+                        "Size": "Small",
+                        "Disabled": false,
+                        "FullWidth": true,
+                        "StartIcon": "Icons.Material.Filled.Favorite",
+                        "IconColor": "Secondary",
+                        "ChildContent": [
+                            {
+                                "Content": "Click me"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "Type": "MudBlazor.MudIcon, MudBlazor",
+                    "Attribute": {
+                        "Title": "Favorite",
+                        "Icon": "Icons.Material.Filled.Api"
+                    }
+                }
+            ]
+        }
+    },
+    {
+        "Type": "MudBlazor.MudFab, MudBlazor",
+        "Attribute": {
+            "Color": "Primary",
+            "StartIcon": "Icons.Material.Filled.Add"
+        }
+    },
+    {
+        "Type": "MudBlazor.MudButtonGroup, MudBlazor",
+        "Attribute": {
+            "Color": "Primary",
+            "Variant": "Outlined",
+            "ChildContent": [
+                {
+                    "Type": "MudBlazor.MudButton, MudBlazor",
+                    "Attribute": {
+                        "ChildContent": [
+                            {
+                                "Content": "btn1"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "Type": "MudBlazor.MudButton, MudBlazor",
+                    "Attribute": {
+                        "ChildContent": [
+                            {
+                                "Content": "btn2"
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    },
+    {
+        "Type": "MudBlazor.MudTextField`1[System.String], MudBlazor",
+        "Attribute": {
+            "Label": "Standard",
+            "Variant": "Text",
+            "Value": {
+                "Bind": {
+                    "Id": "textField1",
+                    "Value": ""
+                }
+            }
+        }
+    },
+    {
+        "Type": "MudBlazor.MudTextField`1[System.String], MudBlazor",
+        "Attribute": {
+            "Label": "Standard",
+            "Variant": "Filled",
+            "Value": {
+                "Bind": {
+                    "Id": "textField2",
+                    "Value": ""
+                }
+            }
+        }
+    },
+    {
+        "Type": "MudBlazor.MudCard, MudBlazor",
         "Attribute": {
             "ChildContent": [
                 {
-                    "Type": "MudBlazor.MudAppBar, MudBlazor",
+                    "Type": "MudBlazor.MudCardContent, MudBlazor",
                     "Attribute": {
                         "ChildContent": [
                             {
-                                "Type": "MudBlazor.MudSpacer, MudBlazor",
-                                "Attribute": {
-                                }
-                            },
-                            {
-                                "Type": "MudBlazor.MudIconButton, MudBlazor",
-                                "Attribute": {
-                                    "Icon": "Icons.Material.Filled.Menu"
-                                }
-                            }
-                        ]
-                    }
-                },
-                {
-                    "Type": "MudBlazor.MudDrawer, MudBlazor",
-                    "Attribute": {
-                        "Open": {
-                            "Bind": {
-                                "Id": "openDrawer",
-                                "Value": false
-                            }
-                        },
-                        "ChildContent": [
-                            {
-                                "Type": "MudBlazor.MudDrawerHeader, MudBlazor",
+                                "Type": "MudBlazor.MudText, MudBlazor",
                                 "Attribute": {
                                     "ChildContent": [
                                         {
-                                            "Type": "MudBlazor.MudText, MudBlazor",
-                                            "Attribute": {
-                                                "ChildContent": [
-                                                    {
-                                                        "Content": "My App"
-                                                    }
-                                                ]
-                                            }
+                                            "Content": "Story of the day"
                                         }
                                     ]
                                 }
                             },
                             {
-                                "Type": "MudBlazor.MudNavMenu, MudBlazor",
+                                "Type": "MudBlazor.MudText, MudBlazor",
                                 "Attribute": {
+                                    "Typo": "body2",
                                     "ChildContent": [
                                         {
-                                            "Type": "MudBlazor.MudNavLink, MudBlazor",
-                                            "Attribute": {
-                                                "ChildContent": [
-                                                    {
-                                                        "Content": "Home"
-                                                    }
-                                                ]
-                                            }
-                                        },
-                                        {
-                                            "Type": "MudBlazor.MudNavLink, MudBlazor",
-                                            "Attribute": {
-                                                "ChildContent": [
-                                                    {
-                                                        "Content": "Home1"
-                                                    }
-                                                ]
-                                            }
-                                        },
-                                        {
-                                            "Type": "MudBlazor.MudNavLink, MudBlazor",
-                                            "Attribute": {
-                                                "ChildContent": [
-                                                    {
-                                                        "Content": "Home2"
-                                                    }
-                                                ]
-                                            }
+                                            "Content": "The quick, brown fox jumps over a lazy dog."
                                         }
                                     ]
                                 }
@@ -89,99 +152,17 @@
                     }
                 },
                 {
-                    "Type": "MudBlazor.MudMainContent, MudBlazor",
+                    "Type": "MudBlazor.MudCardActions, MudBlazor",
                     "Attribute": {
                         "ChildContent": [
                             {
-                                "Type": "MudBlazor.MudPaper, MudBlazor",
-                                "Attribute": {
-                                    "Class": "pa-16 ma-2",
-                                    "Height": "300px",
-                                    "Width": "300px",
-                                    "Elevation": 3,
-                                    "ChildContent": [
-                                        {
-                                            "Type": "MudBlazor.MudRating, MudBlazor",
-                                            "Attribute": {
-                                                "SelectedValue": 3
-                                            }
-                                        },
-                                        {
-                                            "Type": "MudBlazor.MudButton, MudBlazor",
-                                            "Attribute": {
-                                                "Color": "Primary",
-                                                "Variant": "Filled",
-                                                "Size": "Large",
-                                                "Disabled": false,
-                                                "FullWidth": true,
-                                                "Href": "https://github.com/MudBlazor/MudBlazor",
-                                                "Target": "_blank",
-                                                "ChildContent": [
-                                                    {
-                                                        "Content": "Click me"
-                                                    }
-                                                ]
-                                            }
-                                        },
-                                        {
-                                            "Type": "MudBlazor.MudButton, MudBlazor",
-                                            "Attribute": {
-                                                "Color": "Primary",
-                                                "Variant": "Filled",
-                                                "Size": "Small",
-                                                "Disabled": false,
-                                                "FullWidth": true,
-                                                "StartIcon": "Icons.Material.Filled.Favorite",
-                                                "IconColor": "Secondary",
-                                                "ChildContent": [
-                                                    {
-                                                        "Content": "Click me"
-                                                    }
-                                                ]
-                                            }
-                                        },
-                                        {
-                                            "Type": "MudBlazor.MudIcon, MudBlazor",
-                                            "Attribute": {
-                                                "Title": "Favorite",
-                                                "Icon": "Icons.Material.Filled.Api"
-                                            }
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "Type": "MudBlazor.MudFab, MudBlazor",
+                                "Type": "MudBlazor.MudButton, MudBlazor",
                                 "Attribute": {
                                     "Color": "Primary",
-                                    "StartIcon": "Icons.Material.Filled.Add"
-                                }
-                            },
-                            {
-                                "Type": "MudBlazor.MudButtonGroup, MudBlazor",
-                                "Attribute": {
-                                    "Color": "Primary",
-                                    "Variant": "Outlined",
+                                    "Variant": "Filled",
                                     "ChildContent": [
                                         {
-                                            "Type": "MudBlazor.MudButton, MudBlazor",
-                                            "Attribute": {
-                                                "ChildContent": [
-                                                    {
-                                                        "Content": "btn1"
-                                                    }
-                                                ]
-                                            }
-                                        },
-                                        {
-                                            "Type": "MudBlazor.MudButton, MudBlazor",
-                                            "Attribute": {
-                                                "ChildContent": [
-                                                    {
-                                                        "Content": "btn2"
-                                                    }
-                                                ]
-                                            }
+                                            "Content": "Learn More"
                                         }
                                     ]
                                 }
@@ -190,6 +171,146 @@
                     }
                 }
             ]
+        }
+    },
+    {
+        "Type": "MudBlazor.MudForm, MudBlazor",
+        "Attribute": {
+            "ChildContent": [
+                {
+                    "Type": "MudBlazor.MudRadioGroup`1[System.String], MudBlazor",
+                    "Attribute": {
+                        "Value": {
+                            "Bind": {
+                                "Id": "SelectedOption",
+                                "Value": ""
+                            }
+                        },
+                        "ChildContent": [
+                            {
+                                "Type": "MudBlazor.MudRadio`1[System.String], MudBlazor",
+                                "Attribute": {
+                                    "Value": "Radio 1",
+                                    "ChildContent": [
+                                        {
+                                            "Content": "Default"
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "Type": "MudBlazor.MudRadio`1[System.String], MudBlazor",
+                                "Attribute": {
+                                    "Value": "Radio 2",
+                                    "ChildContent": [
+                                        {
+                                            "Content": "Default2"
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    },
+    {
+        "Type": "MudBlazor.MudText, MudBlazor",
+        "Attribute": {
+            "Typo": "body2",
+            "ChildContent": [
+                {
+                    "Content": {
+                        "Bind": {
+                            "Id": "SelectedOption",
+                            "Value": ""
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    {
+        "Type": "MudBlazor.MudCheckBox`1[System.Boolean], MudBlazor",
+        "Attribute": {
+            "Label": "Default",
+            "Value": {
+                "Bind": {
+                    "Id": "checkbox1",
+                    "Value": false
+                }
+            }
+        }
+    },
+    {
+        "Type": "MudBlazor.MudCheckBox`1[System.Boolean], MudBlazor",
+        "Attribute": {
+            "Label": "Primary",
+            "Color": "Primary",
+            "Value": {
+                "Bind": {
+                    "Id": "checkbox1",
+                    "Value": false
+                }
+            }
+        }
+    },
+    {
+        "Type": "MudBlazor.MudSelect`1[System.String], MudBlazor",
+        "Attribute": {
+            "T": "string",
+            "Label": "Coffee",
+            "Variant": "Filled",
+            "Value": {
+                "Bind": {
+                    "Id": "select1",
+                    "Value": ""
+                }
+            },
+            "ChildContent": [
+                {
+                    "Type": "MudBlazor.MudSelectItem`1[System.String], MudBlazor",
+                    "Attribute": {
+                        "Value": "Pizza"
+                    }
+                },
+                {
+                    "Type": "MudBlazor.MudSelectItem`1[System.String], MudBlazor",
+                    "Attribute": {
+                        "Value": "Burger"
+                    }
+                },
+                {
+                    "Type": "MudBlazor.MudSelectItem`1[System.String], MudBlazor",
+                    "Attribute": {
+                        "Value": "Hotdog"
+                    }
+                }
+            ]
+        }
+    },
+    {
+        "Type": "MudBlazor.MudText, MudBlazor",
+        "Attribute": {
+            "Typo": "body2",
+            "ChildContent": [
+                {
+                    "Content": {
+                        "Bind": {
+                            "Id": "select1",
+                            "Value": ""
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    {
+        "Type": "MudBlazor.MudTable`1[dynamic], MudBlazor",
+        "Attribute": {
+            "Items": "[{\"col1\": \"1\", \"col2\": \"a\"}, {\"col1\": \"2\", \"col2\": \"b\"}]",
+            "MultiSelection": true
         }
     }
 ]

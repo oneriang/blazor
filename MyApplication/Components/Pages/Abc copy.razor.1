@@ -1,0 +1,102 @@
+﻿@page "/abc"
+@using Microsoft.AspNetCore.Components.Rendering;
+@using Newtonsoft.Json;
+@using System.ComponentModel;
+@using Newtonsoft.Json.Linq;
+@using System;
+@* @using MudBlazor; *@
+@* @using MudBlazor.Icons; *@
+
+<MudTable Items="@dataList">
+    @* <HeaderContent>
+        @foreach (string property in properties)
+        {
+            <MudTh>@property</MudTh>
+        }
+    </HeaderContent> *@
+    @* <RowTemplate>
+        @foreach (string property in properties)
+        {
+            <MudTd>@context.GetValue(property)
+            </MudTd>
+        }
+    </RowTemplate> *@
+    @* <HeaderContent>
+        @foreach (string property in properties)
+        {
+            <MudTh>@property</MudTh>
+        }
+    </HeaderContent>
+    <RowTemplate>
+        @foreach (string property in properties)
+        {
+            <MudTd>@context.GetValue(property)?.ToString()
+            </MudTd>
+        }
+    </RowTemplate> *@
+</MudTable>
+
+@code {
+
+    private static List<Dictionary<string, object>> dataList;
+    @* private static List<object> dataList1 = new List<object> {
+        {1,2},
+        {3,4}
+    }; *@
+
+    protected override void OnInitialized()
+    {
+        using (var sr = new StreamReader(@"data.json", System.Text.Encoding.UTF8))
+        {
+            // 変数 jsonReadData にファイルの内容を代入 
+            var jsonReadData = sr.ReadToEnd();
+            // デシリアライズして person にセット
+            var jsonString = JsonConvert.DeserializeObject(jsonReadData).ToString();
+
+            dataList = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(jsonString);
+
+            Console.WriteLine(dataList);
+            Console.WriteLine("dataList.Count");
+            Console.WriteLine(dataList.Count);
+            foreach (var item in dataList)
+            {
+                Console.WriteLine(item);
+                Console.WriteLine("item.Count");
+                Console.WriteLine(item.Count);
+                Console.WriteLine(item.Keys);
+                List<string> keyList = new List<string>(item.Keys);
+                Console.WriteLine(keyList);
+                foreach (var i in keyList) {
+                    Console.WriteLine(i);
+                }
+                foreach (var i in item) {
+                    Console.WriteLine(i.Key);
+                    Console.WriteLine(i.Value);
+                }
+                @* dataList1.Add(item); *@
+            }
+        }
+    }
+    
+    private List<string> properties = new List<string> { "a", "b"};
+
+@* 
+    private List<string> properties = GetProperties();
+
+    private static List<string> GetProperties()
+    {
+        var properties = new List<string>();
+
+        foreach (var jObject in dataList)
+        {
+            foreach (JProperty property in jObject.Properties())
+            {
+                if (!properties.Contains(property.Name))
+                {
+                    properties.Add(property.Name);
+                }
+            }
+        }
+        return properties;
+    } *@
+}
