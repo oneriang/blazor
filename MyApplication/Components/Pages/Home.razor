@@ -11,14 +11,23 @@
 }
 else
 {
-    <MudPaper Width="300px">
+    @* <MudPaper Width="300px">
         <MudList SelectedItemChanged="OnSelectedItemChanged" Clickable="true">
             @foreach (var item in tableList)
             {
                 <MudListItem Text="@item.TableName" Value="@item.TableName"/>
             }
         </MudList>
-    </MudPaper>
+    </MudPaper> *@
+    <MudSelect T="string" ValueChanged="OnSelectedItemChanged" Label="Table" AnchorOrigin="Origin.BottomCenter">
+        @* <MudSelectItem Value="@("Cappuccino")" />
+        <MudSelectItem Value="@("Cafe Latte")" />
+        <MudSelectItem Value="@("Espresso")" /> *@
+        @foreach (var item in tableList)
+        {
+            <MudSelectItem Text="@item.TableName" Value="@item.TableName"/>
+        }
+    </MudSelect>
     <p>
         Selected value: @selectedValue
     </p>
@@ -31,7 +40,7 @@ else
 else
 {
     <MyTable DataList="@data" />
-    <table class="table">
+    @* <table class="table">
         <thead>
             <tr>
                 @foreach (var col in selectedTable.Columns)
@@ -51,7 +60,7 @@ else
                 </tr>
             }
         </tbody>
-    </table>
+    </table> *@
 }
 
 @code {
@@ -66,7 +75,7 @@ else
 
     private List<Dictionary<string, object>> data;
 
-    MudListItem selectedItem;
+    @* MudSelectItem<string> selectedItem; *@
     object selectedValue = "";
 
     protected override void OnInitialized()
@@ -76,10 +85,10 @@ else
         tableList = DynamicEntity.GetTableList(connectionString);
     }
 
-    private void OnSelectedItemChanged(MudListItem e)
+    private void OnSelectedItemChanged(string e)
     {
-
-        tableName = e.Text;
+        Console.WriteLine(e);
+        tableName = e;
         selectedValue = tableName;
         Console.WriteLine(tableName);
 

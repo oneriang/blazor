@@ -66,9 +66,9 @@
     private Dictionary<string, object> selectedItem1 = null;
 }
 
-<MyForm FormData="@selectedItem1"></MyForm>
+
 @* <MudText Inline="true" Class="align-self-center">Selected1: @selectedItem1?["Title"]</MudText> *@
-<MudTable Items="@_dataList" MultiSelection="@MultiSelection" @bind-SelectedItem="selectedItem1">
+<MudTable Class="my-2 pt-2" Items="@_dataList" MultiSelection="@MultiSelection" @bind-SelectedItem="selectedItem1">
     <HeaderContent>
         @foreach (var k in cols)
         {
@@ -85,3 +85,6 @@
         <MudTablePager />
     </PagerContent>
 </MudTable>
+@if (@selectedItem1 is not null) {
+    <MyForm FormData="@selectedItem1"></MyForm>
+}
