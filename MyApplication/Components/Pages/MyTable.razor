@@ -57,9 +57,18 @@
             break;
         }
     }
+
+    private void RowClickEvent(TableRowClickEventArgs<object> tableRowClickEventArgs)
+    {
+        Console.WriteLine("Row has been clicked");
+    }
+
+    private Dictionary<string, object> selectedItem1 = null;
 }
 
-<MudTable Items="@_dataList" MultiSelection="@MultiSelection">
+<MyForm FormData="@selectedItem1"></MyForm>
+@* <MudText Inline="true" Class="align-self-center">Selected1: @selectedItem1?["Title"]</MudText> *@
+<MudTable Items="@_dataList" MultiSelection="@MultiSelection" @bind-SelectedItem="selectedItem1">
     <HeaderContent>
         @foreach (var k in cols)
         {
@@ -72,4 +81,7 @@
             <MudTd>@context[k]</MudTd>
         }
     </RowTemplate>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
 </MudTable>
