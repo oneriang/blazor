@@ -1,0 +1,49 @@
+﻿@page "/auth"
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Authorization
+
+@using System.ComponentModel.DataAnnotations
+@using MudBlazorWebApp1.Data
+
+@inject UserManager<ApplicationUser> UserManager
+@inject SignInManager<ApplicationUser> SignInManager
+
+@attribute [Authorize]
+
+<PageTitle>Auth</PageTitle>
+
+<h1>You are authenticated</h1>
+
+<AuthorizeView>
+    Hello @context.User.Identity?.Name!
+    <MudButton @onclick="SignOutAsync">LogOut</MudButton>
+    <button @onclick="PerformSignOut">Sign Out</button>
+</AuthorizeView>
+
+<AuthorizeView>
+    <Authorized>
+        <p>Hello, @context.User.Identity?.Name!</p>
+        @* <p><button @onclick="SecureMethod">Authorized Only Button</button></p> *@
+    </Authorized>
+    <NotAuthorized>
+        <p>You're not authorized.</p>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+
+    private async Task PerformSignOut()
+    {
+        await SignInManager.SignOutAsync();
+        // 可以在此处添加其他注销后的逻辑
+
+        @* // 导航到登录页面或其他目标页面
+        NavigationManager.NavigateTo("/Login"); *@
+    }
+
+    private async Task SignOutAsync()
+    {   Console.WriteLine("SignOutAsync");
+        await SignInManager.SignOutAsync();
+    }
+}
