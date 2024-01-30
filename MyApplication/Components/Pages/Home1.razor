@@ -1,0 +1,111 @@
+﻿@page "/home1"
+@using MyApplication.Data
+@using System.Data
+@* @using Microsoft.Data.Sqlite *@
+@inject SqliteProvider SqliteProvider
+@inject SqlServerProvider SqlServerProvider
+@inject MySqlProvider MySqlProvider
+@inject PostgreSqlProvider PostgreSqlProvider
+
+<PageTitle>Home</PageTitle>
+
+<MudButton Color="Color.Primary" Variant="Variant.Filled" @onclick="InsertData">InsertData</MudButton>
+<MudButton Color="Color.Primary" Variant="Variant.Filled" @onclick="UpdateData">UpdateData</MudButton>
+<MudButton Color="Color.Primary" Variant="Variant.Filled" @onclick="DeleteData">DeleteData</MudButton>
+
+@if (tableList == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <MudSelect T="string" ValueChanged="OnSelectedItemChanged" Label="Table" AnchorOrigin="Origin.BottomCenter">
+    @foreach (var item in tableList)
+        {
+            <MudSelectItem Text="@item.TableName" Value="@item.TableName" />
+        }
+        </MudSelect>
+    <p>
+    Selected value: @tableName
+    </p>
+}
+
+@if (queryResults == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <MyTable DataList="@queryResults" />
+}
+
+@code {
+    private DynamicEntity1 dynamicEntity;
+    private string connectionString = "Data Source=Chinook.db;";
+    private string connectionStringSqlserver = "Data Source=localhost;Initial Catalog=Chinook;User Id=sa;Password=Password.1;TrustServerCertificate=true;";
+    private string connectionStringMysql = "Server=localhost;Database=Chinook;User Id=root;Password=root;Port=33060;";
+    private string connectionStringPostgreSQL = "Host=localhost;Port=54321;Database=Chinook;User Id=postgres;Password=root;";
+    private string schemaName = "public";
+    private string tableName = "";
+    private List<TableInfo> tableList;
+
+    private List<Dictionary<string, object>> queryResults;
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        @* dynamicEntity = new DynamicEntity1(SqliteProvider, connectionString); *@
+        @* dynamicEntity = new DynamicEntity1(SqlServerProvider, connectionStringSqlserver); *@
+        @* dynamicEntity = new DynamicEntity1(MySqlProvider, connectionStringMysql); *@
+        dynamicEntity = new DynamicEntity1(PostgreSqlProvider, connectionStringPostgreSQL, schemaName);
+        tableList = dynamicEntity.GetTableList();
+        @* tableListSqlserver = dynamicEntitySqlserver.GetTableList(); *@
+    }
+
+    private void OnSelectedItemChanged(string e)
+    {
+        tableName = e;
+        QueryData();
+    }
+
+    private void InsertData()
+    {
+        Console.WriteLine("InsertData");
+        Dictionary<string, object> valuesToInsert = new Dictionary<string, object>{
+            {"ArtistId", 277},
+            {"Name", "AAA"}
+        };
+        dynamicEntity.Insert(tableName, valuesToInsert);
+        QueryData();
+    }
+
+    private void UpdateData()
+    {
+        Console.WriteLine("UpdateData");
+        Dictionary<string, object> whereKeyValues = new Dictionary<string, object>(){
+            {"ArtistId", 277}
+        };
+        Dictionary<string, object> valuesToUpdate = new Dictionary<string, object>(){
+            {"Name", "DDD"}
+        };
+        dynamicEntity.Update(tableName, whereKeyValues, valuesToUpdate);
+        QueryData();
+    }
+
+    private void DeleteData()
+    {
+        Console.WriteLine("DeleteData");
+        Dictionary<string, object> whereKeyValues = new Dictionary<string, object>(){
+            {"ArtistId", 277}
+        };
+        dynamicEntity.Delete(tableName, whereKeyValues);
+        QueryData();
+    }
+
+    private List<Dictionary<string, object>> QueryData()
+    {
+        queryResults = dynamicEntity.Select(tableName);
+
+        return queryResults;
+    }
+}

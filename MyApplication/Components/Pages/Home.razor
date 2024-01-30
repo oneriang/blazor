@@ -1,7 +1,8 @@
 ﻿@page "/home"
 @using BlazorApp.Data
 @using System.Data
-@using System.Data.SQLite
+@* @using System.Data.SQLite *@
+@using Microsoft.Data.Sqlite
 
 <PageTitle>Home</PageTitle>
 
@@ -63,13 +64,91 @@ else
     </table> *@
 }
 
+@* 
+<h3>Dynamic Entity Page</h3>
+
+<div>
+    <h4>Table Information</h4>
+    @if (tableInfo != null)
+    {
+        <ul>
+            <li>Table Name: @tableInfo.TableName</li>
+            <li>
+                <h5>Columns:</h5>
+                <ul>
+                    @foreach (var column in tableInfo.Columns)
+                    {
+                        <li>@column.ColumnName - @column.DataType</li>
+                    }
+                </ul>
+            </li>
+        </ul>
+    }
+</div>
+
+<div>
+    <h4>CRUD Operations</h4>
+
+    <button @onclick="InsertData">Insert Data</button>
+    <button @onclick="UpdateData">Update Data</button>
+    <button @onclick="DeleteData">Delete Data</button>
+</div>
+
+<div>
+    <h4>Insert Data</h4>
+
+    <form @onsubmit="InsertData">
+        @foreach (var column in tableInfo.Columns)
+        {
+            <div>
+                <label for="@column.ColumnName">@column.ColumnName:</label>
+                <input type="text" id="@column.ColumnName" @bind="insertDataValues[column.ColumnName]" />
+            </div>
+        }
+        <button type="submit">Submit</button>
+    </form>
+</div>
+
+<div>
+    <h4>Data Query</h4>
+
+    <button @onclick="QueryData">Query Data</button>
+    @if (queryResults != null)
+    {
+        <table>
+            <thead>
+                <tr>
+                    @foreach (var column in tableInfo.Columns)
+                    {
+                        <th>@column.ColumnName</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var row in queryResults)
+                {
+                    <tr>
+                        @foreach (var entry in row)
+                        {
+                            <td>@entry.Value</td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div> *@
+
 @code {
     private DynamicEntity dynamicEntity;
-    private string connectionString = "Data Source=Chinook.db;Version=3;";
+    private string connectionString = "Data Source=Chinook.db;";
     private string tableName = "Artist";
     private List<TableInfo> tableList;
     private TableInfo selectedTable;
     string? listboxValue;
+
+    private List<Dictionary<string, object>> queryResults;
+    private Dictionary<string, object> insertDataValues = new Dictionary<string, object>();
 
     private int primaryKeyValue = 1;
 
@@ -87,7 +166,7 @@ else
 
     private void OnSelectedItemChanged(string e)
     {
-        Console.WriteLine(e);
+        @* Console.WriteLine(e); *@
         tableName = e;
         selectedValue = tableName;
         Console.WriteLine(tableName);
@@ -95,16 +174,25 @@ else
         selectedTable = tableList.Find(x => x.TableName == tableName);
 
         List<TableInfo> tableInfo = GetTableInfo(connectionString, tableName);
-        Console.WriteLine(tableInfo);
+        @* Console.WriteLine(tableInfo); *@
        
         dynamicEntity = CreateDynamicEntity(tableInfo);
-
+@* 
+        if (tableName == "Artist") {
+            InsertData();
+        } *@
         data = QueryData();
     }
 
     private void InsertData()
     {
-        dynamicEntity.AddProperty("ColumnName", "SomeValue");
+        Console.WriteLine("InsertData");
+        Console.WriteLine(dynamicEntity.properties["ArtistId"]);
+        Console.WriteLine(dynamicEntity.properties["Name"]);
+        dynamicEntity.SetValue("ArtistId", 276);
+        dynamicEntity.SetValue("Name", "AAA");
+        Console.WriteLine(dynamicEntity.properties["ArtistId"]);
+        Console.WriteLine(dynamicEntity.properties["Name"]);
         dynamicEntity.Insert(connectionString, tableName);
     }
 
@@ -138,7 +226,7 @@ else
 
 @code {
 
-    private List<TableInfo> GetTableInfo(string connectionString, string tableName)
+    @* private List<TableInfo> GetTableInfo(string connectionString, string tableName)
     {
         List<TableInfo> tableInfo = new List<TableInfo>();
 
@@ -167,7 +255,39 @@ else
         }
 
         return tableInfo;
+    } *@
+
+private List<TableInfo> GetTableInfo(string connectionString, string tableName)
+{
+    List<TableInfo> tableInfo = new List<TableInfo>();
+
+    using (SqliteConnection connection = new SqliteConnection(connectionString))
+    {
+        connection.Open();
+
+        string query = $"PRAGMA table_info('{tableName}');";
+
+        using (SqliteCommand command = new SqliteCommand(query, connection))
+        {
+            using (SqliteDataReader reader = command.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    TableInfo info = new TableInfo
+                    {
+                        ColumnName = reader["name"].ToString(),
+                        DataType = reader["type"].ToString()
+                        // ... (other properties)
+                    };
+
+                    tableInfo.Add(info);
+                }
+            }
+        }
     }
+
+    return tableInfo;
+}
 
     private DynamicEntity CreateDynamicEntity(List<TableInfo> tableInfo)
     {

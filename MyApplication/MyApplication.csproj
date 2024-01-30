@@ -8,9 +8,12 @@
 
   
   <ItemGroup>
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.5" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.1" />
     <PackageReference Include="MudBlazor" Version="6.*" />
+    <PackageReference Include="MySqlConnector" Version="2.3.5" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="System.Data.SQLite" Version="1.0.118" />
+    <PackageReference Include="Npgsql" Version="8.0.1" />
   </ItemGroup>
   
 </Project>

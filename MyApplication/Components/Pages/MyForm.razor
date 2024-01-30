@@ -51,7 +51,7 @@
                 {
                     @foreach (var item in _formData)
                     {
-                        Console.WriteLine(item.GetType());
+                        @* Console.WriteLine(item.GetType()); *@
                         @* <MudTextField T="object" Value="@item.Value" Label="@item.Key" Required="true"
                 RequiredError="@(item.Key + " is required!")" /> *@
                         @* <DynamicComponent Type="@(Type.GetType("MudBlazor.MudTextField`1[System.Object], MudBlazor"))"
@@ -96,6 +96,8 @@
                 OnClick="@(()=>form.ResetAsync())" Class="mx-2">Reset</MudButton>
             <MudButton Variant="Variant.Filled" DisableElevation="true" OnClick="@(()=>form.ResetValidation())">Reset
                 Validation</MudButton>
+            <MudButton Variant="Variant.Filled" DisableElevation="true" OnClick="Save">
+                Save</MudButton>
         </MudPaper>
     </MudItem>
     <MudItem xs="12" sm="5">
@@ -138,6 +140,12 @@
         if (pwField1.Value != arg)
             return "Passwords don't match";
         return null;
+    }
+
+    private void Save()
+    {
+        Console.WriteLine(form.Validate());
+        
     }
 
 }

@@ -2,7 +2,8 @@
 
 using System;
 using System.Collections.Generic;
-using Microsoft.Data.Sqlite;
+using System.Data;
+using System.Data.SQLite;
 
 namespace BlazorApp.Data
 {
@@ -10,7 +11,7 @@ namespace BlazorApp.Data
     {
         public string ColumnName { get; set; }
         public string DataType { get; set; }
-        // ... (other properties)
+        // ... (其他属性)
     }
 
     class TableInfo
@@ -27,15 +28,15 @@ namespace BlazorApp.Data
                 TableName = tableName
             };
 
-            using (SqliteConnection connection = new SqliteConnection(connectionString))
+            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
             {
                 connection.Open();
 
                 string query = $"PRAGMA table_info({tableName})";
 
-                using (SqliteCommand command = new SqliteCommand(query, connection))
+                using (SQLiteCommand command = new SQLiteCommand(query, connection))
                 {
-                    using (SqliteDataReader reader = command.ExecuteReader())
+                    using (SQLiteDataReader reader = command.ExecuteReader())
                     {
                         while (reader.Read())
                         {
@@ -43,7 +44,7 @@ namespace BlazorApp.Data
                             {
                                 ColumnName = reader["name"].ToString(),
                                 DataType = reader["type"].ToString(),
-                                // ... (other properties)
+                                // ... (其他属性)
                             };
 
                             tableInfo.Columns.Add(columnInfo);
@@ -58,7 +59,7 @@ namespace BlazorApp.Data
 
     class DynamicEntity
     {
-        public Dictionary<string, object> properties = new Dictionary<string, object>();
+        private Dictionary<string, object> properties = new Dictionary<string, object>();
 
         public void AddProperty(string propertyName, object value)
         {
@@ -85,8 +86,7 @@ namespace BlazorApp.Data
 
         public void Insert(string connectionString, string tableName)
         {
-            Console.WriteLine("Insert");
-            using (SqliteConnection connection = new SqliteConnection(connectionString))
+            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
             {
                 connection.Open();
 
@@ -94,7 +94,7 @@ namespace BlazorApp.Data
                 string values = string.Join(", ", properties.Keys.Select(key => "@" + key));
                 string insertQuery = $"INSERT INTO {tableName} ({columns}) VALUES ({values})";
 
-                using (SqliteCommand command = new SqliteCommand(insertQuery, connection))
+                using (SQLiteCommand command = new SQLiteCommand(insertQuery, connection))
                 {
                     foreach (var entry in properties)
                     {
@@ -102,14 +102,53 @@ namespace BlazorApp.Data
                     }
 
                     command.ExecuteNonQuery();
-                    Console.WriteLine("command.ExecuteNonQuery()");
                 }
             }
         }
 
+        // public void Update(string connectionString, string tableName, string primaryKeyColumnName, object primaryKeyValue)
+        // {
+        //     using (SQLiteConnection connection = new SQLiteConnection(connectionString))
+        //     {
+        //         connection.Open();
+
+        //         string setClause = string.Join(", ", properties.Keys.Select(key => $"{key} = @{key}"));
+        //         string updateQuery = $"UPDATE {tableName} SET {setClause} WHERE {primaryKeyColumnName} = @{primaryKeyColumnName}";
+
+        //         using (SQLiteCommand command = new SQLiteCommand(updateQuery, connection))
+        //         {
+        //             foreach (var entry in properties)
+        //             {
+        //                 command.Parameters.AddWithValue("@" + entry.Key, entry.Value);
+        //             }
+
+        //             command.Parameters.AddWithValue("@" + primaryKeyColumnName, primaryKeyValue);
+
+        //             command.ExecuteNonQuery();
+        //         }
+        //     }
+        // }
+
+        // public void Delete(string connectionString, string tableName, string primaryKeyColumnName, object primaryKeyValue)
+        // {
+        //     using (SQLiteConnection connection = new SQLiteConnection(connectionString))
+        //     {
+        //         connection.Open();
+
+        //         string deleteQuery = $"DELETE FROM {tableName} WHERE {primaryKeyColumnName} = @{primaryKeyColumnName}";
+
+        //         using (SQLiteCommand command = new SQLiteCommand(deleteQuery, connection))
+        //         {
+        //             command.Parameters.AddWithValue("@" + primaryKeyColumnName, primaryKeyValue);
+
+        //             command.ExecuteNonQuery();
+        //         }
+        //     }
+        // }
+
         public void Update(string connectionString, string tableName, Dictionary<string, object> primaryKeyValues)
         {
-            using (SqliteConnection connection = new SqliteConnection(connectionString))
+            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
             {
                 connection.Open();
 
@@ -118,7 +157,7 @@ namespace BlazorApp.Data
 
                 string updateQuery = $"UPDATE {tableName} SET {setClause} WHERE {whereClause}";
 
-                using (SqliteCommand command = new SqliteCommand(updateQuery, connection))
+                using (SQLiteCommand command = new SQLiteCommand(updateQuery, connection))
                 {
                     foreach (var entry in properties)
                     {
@@ -137,14 +176,14 @@ namespace BlazorApp.Data
 
         public void Delete(string connectionString, string tableName, Dictionary<string, object> primaryKeyValues)
         {
-            using (SqliteConnection connection = new SqliteConnection(connectionString))
+            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
             {
                 connection.Open();
 
                 string whereClause = string.Join(" AND ", primaryKeyValues.Keys.Select(key => $"{key} = @{key}"));
                 string deleteQuery = $"DELETE FROM {tableName} WHERE {whereClause}";
 
-                using (SqliteCommand command = new SqliteCommand(deleteQuery, connection))
+                using (SQLiteCommand command = new SQLiteCommand(deleteQuery, connection))
                 {
                     foreach (var entry in primaryKeyValues)
                     {
@@ -160,15 +199,17 @@ namespace BlazorApp.Data
         {
             List<Dictionary<string, object>> results = new List<Dictionary<string, object>>();
 
-            using (SqliteConnection connection = new SqliteConnection(connectionString))
+            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
             {
                 connection.Open();
 
                 string selectQuery = $"SELECT * FROM {tableName}";
-
-                using (SqliteCommand command = new SqliteCommand(selectQuery, connection))
+                Console.WriteLine("tableName");
+                Console.WriteLine(tableName);
+Console.WriteLine(selectQuery);
+                using (SQLiteCommand command = new SQLiteCommand(selectQuery, connection))
                 {
-                    using (SqliteDataReader reader = command.ExecuteReader())
+                    using (SQLiteDataReader reader = command.ExecuteReader())
                     {
                         while (reader.Read())
                         {
@@ -190,22 +231,33 @@ namespace BlazorApp.Data
             return results;
         }
 
+        
         public static List<TableInfo> GetTableList(string connectionString)
         {
+            // List<string> tableList = new List<string>();
             List<TableInfo> tableList = new List<TableInfo>();
 
-            using (SqliteConnection connection = new SqliteConnection(connectionString))
+            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
             {
                 connection.Open();
 
                 string query = "SELECT name FROM sqlite_master WHERE type='table'";
 
-                using (SqliteCommand command = new SqliteCommand(query, connection))
+                using (SQLiteCommand command = new SQLiteCommand(query, connection))
                 {
-                    using (SqliteDataReader reader = command.ExecuteReader())
+                    using (SQLiteDataReader reader = command.ExecuteReader())
                     {
                         while (reader.Read())
                         {
+                            // // TableInfo tableInfo = new TableInfo
+                            // // {
+                            // //     TableName = reader["name"].ToString(),
+                            // //     // ... (其他属性)
+                            // // };
+
+                            // // tableList.Add(tableInfo);
+                            // tableList.Add(reader["name"].ToString());
+
                             string tableName = reader["name"].ToString();
                             TableInfo tableInfo = TableInfo.GetTableInfo(connectionString, tableName);
                             tableList.Add(tableInfo);
@@ -217,4 +269,5 @@ namespace BlazorApp.Data
             return tableList;
         }
     }
+
 }

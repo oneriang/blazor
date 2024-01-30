@@ -9,6 +9,11 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddMudServices();
 
+builder.Services.AddScoped<MyApplication.Data.SqliteProvider>();
+builder.Services.AddScoped<MyApplication.Data.SqlServerProvider>();
+builder.Services.AddScoped<MyApplication.Data.MySqlProvider>();
+builder.Services.AddScoped<MyApplication.Data.PostgreSqlProvider>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
