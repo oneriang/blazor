@@ -1,5 +1,8 @@
 ﻿@using Newtonsoft.Json;
 @using Newtonsoft.Json.Linq;
+@using MyApplication.Data
+@inject DynamicEntityService dynamicEntityService
+
 @code {
     [Parameter]
     public Dictionary<string, object> FormData
@@ -16,8 +19,10 @@
 
     private static Dictionary<string, object> _formData;
 
+    private DynamicEntity1 dynamicEntity;
     protected override void OnInitialized()
     {
+        dynamicEntity = dynamicEntityService.GetDynamicEntity();
     }
 
     private IDictionary<string, object> parameters = new Dictionary<string, object>
@@ -30,8 +35,8 @@
                 {
                     { "Label", item.Key },
                     { "Value", item.Value },
-                    { "Required", true },
-                    { "RequiredError", item.Key + " is required!" }
+                    @* { "Required", true },
+                    { "RequiredError", item.Key + " is required!" } *@
                 };
     }
 
@@ -142,10 +147,22 @@
         return null;
     }
 
+    private void InsertData()
+    {
+        Console.WriteLine("InsertData");
+        Console.WriteLine(_formData["ArtistId"]);
+        Console.WriteLine(_formData["Name"]);
+        Dictionary<string, object> valuesToInsert = new Dictionary<string, object>{
+            {"ArtistId", (int)(long)_formData["ArtistId"] + 1},
+            {"Name", _formData["Name"]}
+        };
+        dynamicEntity.Insert(dynamicEntityService.TableName, valuesToInsert);
+    }
+
     private void Save()
     {
         Console.WriteLine(form.Validate());
-        
+        InsertData();
     }
 
 }

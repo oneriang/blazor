@@ -13,6 +13,7 @@ builder.Services.AddScoped<MyApplication.Data.SqliteProvider>();
 builder.Services.AddScoped<MyApplication.Data.SqlServerProvider>();
 builder.Services.AddScoped<MyApplication.Data.MySqlProvider>();
 builder.Services.AddScoped<MyApplication.Data.PostgreSqlProvider>();
+builder.Services.AddScoped<MyApplication.Data.DynamicEntityService>();
 
 var app = builder.Build();
 

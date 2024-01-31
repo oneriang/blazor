@@ -6,8 +6,19 @@
 @inject SqlServerProvider SqlServerProvider
 @inject MySqlProvider MySqlProvider
 @inject PostgreSqlProvider PostgreSqlProvider
+@inject DynamicEntityService dynamicEntityService
 
 <PageTitle>Home</PageTitle>
+
+<p>Select Database:</p>
+<select @bind="selectedDatabase">
+    <option value="sqlite">SQLite</option>
+    <option value="sqlserver">SQL Server</option>
+    <option value="postgresql">PostgreSQL</option>
+    <option value="mysql">MySQL</option>
+</select>
+
+<button @onclick="ExecuteBusinessLogic">Execute Business Logic</button>
 
 <MudButton Color="Color.Primary" Variant="Variant.Filled" @onclick="InsertData">InsertData</MudButton>
 <MudButton Color="Color.Primary" Variant="Variant.Filled" @onclick="UpdateData">UpdateData</MudButton>
@@ -49,22 +60,51 @@ else
     private string tableName = "";
     private List<TableInfo> tableList;
 
+    private string selectedDatabase = "sqlite";
+
+    private void ExecuteBusinessLogic()
+    {
+        switch (selectedDatabase.ToLower())
+        {
+            case "sqlite":
+                dynamicEntity = new DynamicEntity1(SqliteProvider, connectionString);
+                break;
+            case "sqlserver":
+                dynamicEntity = new DynamicEntity1(SqlServerProvider, connectionStringSqlserver);
+                break;
+            case "postgresql":
+                dynamicEntity = new DynamicEntity1(PostgreSqlProvider, connectionStringPostgreSQL, schemaName);
+                break;
+            case "mysql":
+                dynamicEntity = new DynamicEntity1(MySqlProvider, connectionStringMysql);
+                break;
+            default:
+                throw new ArgumentException($"Unknown database selected: {selectedDatabase}");
+        }
+
+        dynamicEntityService.SetDynamicEntity(dynamicEntity);
+        dynamicEntity = dynamicEntityService.GetDynamicEntity();
+        
+        @* dynamicEntity = new DynamicEntity1(SqliteProvider, connectionString); *@
+        @* dynamicEntity = new DynamicEntity1(SqlServerProvider, connectionStringSqlserver); *@
+        @* dynamicEntity = new DynamicEntity1(MySqlProvider, connectionStringMysql); *@
+        @* dynamicEntity = new DynamicEntity1(PostgreSqlProvider, connectionStringPostgreSQL, schemaName); *@
+        tableList = dynamicEntity.GetTableList();
+    }
+
     private List<Dictionary<string, object>> queryResults;
     protected override void OnInitialized()
     {
         base.OnInitialized();
 
-        @* dynamicEntity = new DynamicEntity1(SqliteProvider, connectionString); *@
-        @* dynamicEntity = new DynamicEntity1(SqlServerProvider, connectionStringSqlserver); *@
-        @* dynamicEntity = new DynamicEntity1(MySqlProvider, connectionStringMysql); *@
-        dynamicEntity = new DynamicEntity1(PostgreSqlProvider, connectionStringPostgreSQL, schemaName);
-        tableList = dynamicEntity.GetTableList();
+         ExecuteBusinessLogic();
         @* tableListSqlserver = dynamicEntitySqlserver.GetTableList(); *@
     }
 
     private void OnSelectedItemChanged(string e)
     {
         tableName = e;
+        dynamicEntityService.TableName = tableName;
         QueryData();
     }
 
