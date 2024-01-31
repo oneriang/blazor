@@ -1,0 +1,379 @@
+# The Caddyfile is an easy way to configure your Caddy web server.
+#
+# Unless the file starts with a global options block, the first
+# uncommented line is always the address of your site.
+#
+# To use your own domain name (with automatic HTTPS), first make
+# sure your domain's A/AAAA DNS records are properly pointed to
+# this machine's public IP, then replace ":80" below with your
+# domain name.
+
+# :80 {
+# 	# Set this path to your site's directory.
+# 	root * /usr/share/caddy
+
+# 	# Enable the static file server.
+# 	file_server
+
+# 	# Another common task is to set up a reverse proxy:
+# 	# reverse_proxy localhost:8080
+
+# 	# Or serve a PHP site through php-fpm:
+# 	# php_fastcgi localhost:9000
+# }
+
+redmine.yiersan.link {
+	route /* {
+		uri strip_prefix /*
+		reverse_proxy 127.0.0.1:10083
+	}
+}
+
+share.yiersan.link {
+	route /* {
+		uri strip_prefix /*
+		reverse_proxy 127.0.0.1:8000
+	}
+	route /server/* {
+		uri strip_prefix /server
+		reverse_proxy 127.0.0.1:3000
+	}
+	redir /server /server/
+}
+
+fb.yiersan.link {
+	route /* {
+		uri strip_prefix /*
+		reverse_proxy 127.0.0.1:9090
+	}
+}
+
+talk.yiersan.link {
+        route /* {
+                uri strip_prefix /*
+                reverse_proxy 127.0.0.1:3001
+        }
+}
+
+blazor.yiersan.link {
+        route /* {
+                uri strip_prefix /*
+                reverse_proxy 127.0.0.1:5000
+        }
+}
+
+# tooljet.yiersan.link {
+#         route /* {
+#                 uri strip_prefix /*
+#                 reverse_proxy 127.0.0.1:8080
+#         }
+# }
+
+
+# dev.yiersan.link {
+# 	# reverse_proxy localhost:8080
+# 	route /* {
+# 		root * /usr/share/caddy
+# 		file_server
+# 		uri strip_prefix /code
+# 		reverse_proxy 127.0.0.1:80
+# 	}
+# 	# rewrite /code /code/
+# 	redir /code /code/
+# 	route /code/* {
+# 		uri strip_prefix /code
+# 		reverse_proxy 127.0.0.1:8080
+# 	}
+# }
+
+# route /api/* {
+# 	uri strip_prefix /api
+# 	reverse_proxy 127.0.0.1:8080
+# }
+
+# Refer to the Caddy docs for more information:
+# https://caddyserver.com/docs/caddyfile
+
+
+# # The Caddyfile is an easy way to configure your Caddy web server.
+# #
+# # Unless the file starts with a global options block, the first
+# # uncommented line is always the address of your site.
+# #
+# # To use your own domain name (with automatic HTTPS), first make
+# # sure your domain's A/AAAA DNS records are properly pointed to
+# # this machine's public IP, then replace ":80" below with your
+# # domain name.
+# n8n.yiersan.link {
+#     reverse_proxy 127.0.0.1:5678 {
+#       flush_interval 10
+#     }
+# }
+
+# fm.yiersan.link {
+#         log  {
+#                 output file /var/log/caddy/cady-accesslog-fm {
+#                         roll_size 1gb
+#                         roll_keep 5
+#                         roll_keep_for 720h
+#                 }
+#         output file /var/log/caddy/caddy-errors-fm {
+#                         level warn
+#                         roll_size 1gb
+#                         roll_keep 5
+#                         roll_keep_for 720h
+#                 }
+#         }
+#         reverse_proxy 127.0.0.1:88
+# }
+
+# odoo.yiersan.link {
+#         log  {
+#                 output file /var/log/caddy/cady-accesslog-odoo {
+#                         roll_size 1gb
+#                         roll_keep 5
+#                         roll_keep_for 720h
+#                 }
+#         output file /var/log/caddy/caddy-errors-odoo {
+#                         level warn
+#                         roll_size 1gb
+#                         roll_keep 5
+#                         roll_keep_for 720h
+#                 }
+#         }
+#         reverse_proxy 127.0.0.1:8069
+# }
+
+# redmine.yiersan.link {
+#         log  {
+#                 output file /var/log/caddy/cady-accesslog-redmine {
+#                         roll_size 1gb
+#                         roll_keep 5
+#                         roll_keep_for 720h
+#                 }
+#         output file /var/log/caddy/caddy-errors-redmine {
+#                         level warn
+#                         roll_size 1gb
+#                         roll_keep 5
+#                         roll_keep_for 720h
+#                 }
+#         }
+#         reverse_proxy 127.0.0.1:3000
+# }
+
+# code.yiersan.link {
+#         log  {
+#                 output file /var/log/caddy/cady-accesslog-code {
+#                         roll_size 1gb
+#                         roll_keep 5
+#                         roll_keep_for 720h
+#                 }
+#         output file /var/log/caddy/caddy-errors-code {
+#                         level warn
+#                         roll_size 1gb
+#                         roll_keep 5
+#                         roll_keep_for 720h
+#                 }
+#         }
+#         reverse_proxy 127.0.0.1:8080
+# }
+
+# share.yiersan.link {
+#         log  {
+#                 output file /var/log/caddy/cady-accesslog-share {
+#                         roll_size 1gb
+#                         roll_keep 5
+#                         roll_keep_for 720h
+#                 }
+#         output file /var/log/caddy/caddy-errors-share {
+#                         level warn
+#                         roll_size 1gb
+#                         roll_keep 5
+#                         roll_keep_for 720h
+#                 }
+#         }
+#         reverse_proxy 127.0.0.1:8081
+# }
+
+# jiaozi.yiersan.link {
+#         log  {
+#                 output file /var/log/caddy/cady-accesslog-jiaozi {
+#                         roll_size 1gb
+#                         roll_keep 5
+#                         roll_keep_for 720h
+#                 }
+#         output file /var/log/caddy/caddy-errors-jiaozi {
+#                         level warn
+#                         roll_size 1gb
+#                         roll_keep 5
+#                         roll_keep_for 720h
+#                 }
+#         }
+#         reverse_proxy 127.0.0.1:5000
+# }
+
+# yiersan.link {
+#                 #gzip
+
+#    log  {
+#         output file /var/log/caddy/cady-accesslog {
+#                 roll_size 1gb
+#                 roll_keep 5
+#                 roll_keep_for 720h
+#                 }
+#         output file /var/log/caddy/caddy-errors {
+#                 level warn
+#                 roll_size 1gb
+#                 roll_keep 5
+#                 roll_keep_for 720h
+#                 }
+#         }
+#         route /* {
+#                 uri strip_prefix /
+#                 reverse_proxy 127.0.0.1:8082 {
+#                         header_up Host {http.request.host}
+#                         header_up X-Real-IP {http.request.remote}
+#                         header_up X-Forwarded-For {http.request.remote}
+#                         header_up X-Forwarded-Port {http.request.port}
+#                         header_up X-Forwarded-Proto {http.request.scheme}
+#                 }
+#         }
+#         route /blog/* {
+#                 uri strip_prefix /blog
+#                 reverse_proxy 18.182.172.52:8085 {
+#                         header_up Host {http.request.host}
+#                         header_up X-Real-IP {http.request.remote}
+#                         header_up X-Forwarded-For {http.request.remote}
+#                         header_up X-Forwarded-Port {http.request.port}
+#                         header_up X-Forwarded-Proto {http.request.scheme}
+#                 }
+#         }
+#         redir /blog /blog/
+#         route /code/* {
+#                 uri strip_prefix /code
+#                 reverse_proxy 127.0.0.1:8080 {
+#                         header_up Host {http.request.host}
+#                         header_up X-Real-IP {http.request.remote}
+#                         header_up X-Forwarded-For {http.request.remote}
+#                         header_up X-Forwarded-Port {http.request.port}
+#                         header_up X-Forwarded-Proto {http.request.scheme}
+#                 }
+#         }
+#         redir /code /code/
+#         route /baozi/* {
+#                 #try_files {path} /index.html
+#                 uri strip_prefix /baozi
+#                 reverse_proxy 127.0.0.1:8081 {
+#                         header_up Host {http.request.host}
+#                         header_up X-Real-IP {http.request.remote}
+#                         header_up X-Forwarded-For {http.request.remote}
+#                         header_up X-Forwarded-Port {http.request.port}
+#                         header_up X-Forwarded-Proto {http.request.scheme}
+#                 }
+                
+#         }
+#         redir /baozi /baozi/
+#         route /mantou/* {
+#                 #try_files {path} /index.html
+#                 uri strip_prefix /mantou
+#                 reverse_proxy 127.0.0.1:8003 {
+#                         header_up Host {http.request.host}
+#                         header_up X-Real-IP {http.request.remote}
+#                         header_up X-Forwarded-For {http.request.remote}
+#                         header_up X-Forwarded-Port {http.request.port}
+#                         header_up X-Forwarded-Proto {http.request.scheme}
+#                 }
+                
+#         }
+#         redir /mantou /mantou/
+#         route /jianbing/* {
+#                 #try_files {path} /index.html
+#                 uri strip_prefix /jianbing
+#                 reverse_proxy 127.0.0.1:8083 {
+#                         header_up Host {http.request.host}
+#                         header_up X-Real-IP {http.request.remote}
+#                         header_up X-Forwarded-For {http.request.remote}
+#                         header_up X-Forwarded-Port {http.request.port}
+#                         header_up X-Forwarded-Proto {http.request.scheme}
+#                 }
+                
+#         }
+#         redir /jianbing /jianbing/
+#         redir /ar /ar/
+#         route /ar/* {
+#                 #try_files {path} /index.html
+#                 uri strip_prefix /ar
+#                 reverse_proxy 127.0.0.1:8084 {
+#                         header_up Host {http.request.host}
+#                         header_up X-Real-IP {http.request.remote}
+#                         header_up X-Forwarded-For {http.request.remote}
+#                         header_up X-Forwarded-Port {http.request.port}
+#                         header_up X-Forwarded-Proto {http.request.scheme}
+#                 }
+#         }
+#         route /jiaozi/* {
+#                 #
+#                 #uri replace /stylesheets/* /jiaozi/stylesheets/*
+#                 uri strip_prefix /jiaozi
+#                 #uri replace /stylesheets/* ../stylesheets/*
+#                 reverse_proxy 127.0.0.1:3000 {
+#                         header_up Host {http.request.host}
+#                         header_up X-Real-IP {http.request.remote}
+#                         header_up X-Forwarded-For {http.request.remote}
+#                         header_up X-Forwarded-Port {http.request.port}
+#                         header_up X-Forwarded-Proto {http.request.scheme}
+#                 }
+#         }
+#         redir /jiaozi /jiaozi/
+#         route /cognito/* {
+#                 uri strip_prefix /cognito
+                
+#                 reverse_proxy 127.0.0.1:5000 {
+#                         header_up Host {http.request.host}
+#                         header_up X-Real-IP {http.request.remote}
+#                         header_up X-Forwarded-For {http.request.remote}
+#                         header_up X-Forwarded-Port {http.request.port}
+#                         header_up X-Forwarded-Proto {http.request.scheme}
+#                 }
+                
+#         }
+#         redir /cognito /cognito/
+#         # route /idp/* {
+#         #         uri strip_prefix /idp
+#         #         reverse_proxy 127.0.0.1:8443 {
+#         #                 header_up Host {http.request.host}
+#         #                 header_up X-Real-IP {http.request.remote}
+#         #                 header_up X-Forwarded-For {http.request.remote}
+#         #                 header_up X-Forwarded-Port {http.request.port}
+#         #                 header_up X-Forwarded-Proto {http.request.scheme}
+#         #         }
+#         # }
+#         # redir /idp /idp/
+#         route /auth/* {
+#                 uri strip_prefix /auth
+#                 reverse_proxy 127.0.0.1:8443 {
+#                         header_up Host {http.request.host}
+#                         header_up X-Real-IP {http.request.remote}
+#                         header_up X-Forwarded-For {http.request.remote}
+#                         header_up X-Forwarded-Port {http.request.port}
+#                         header_up X-Forwarded-Proto {http.request.scheme}
+#                 }
+#         }
+#         redir /auth /auth/
+#         route /baozi_server/* {
+#                 uri strip_prefix /baozi_server
+#                 reverse_proxy 127.0.0.1:5000 {
+#                         header_up Host {http.request.host}
+#                         header_up X-Real-IP {http.request.remote}
+#                         header_up X-Forwarded-For {http.request.remote}
+#                         header_up X-Forwarded-Port {http.request.port}
+#                         header_up X-Forwarded-Proto {http.request.scheme}
+#                 }
+#         }
+#         redir /baozi_server /baozi_server/
+#         #try_files {path} /index.html
+# }
+
+
+# # Refer to the Caddy docs for more information:
+# # https://caddyserver.com/docs/caddyfile
