@@ -32,7 +32,7 @@ namespace MyApplication.Data
                 string columns = string.Join(", ", valuesToInsert.Keys.Select(k => $"\"{k}\""));
                 string parameters = string.Join(", ", valuesToInsert.Keys.Select(k => $"@{k}"));
 
-                string sql = $"INSERT INTO {_schemaName}.\"{tableName}\" ({columns}) VALUES ({parameters})";
+                string sql = $"INSERT INTO \"{_schemaName}\".\"{tableName}\" ({columns}) VALUES ({parameters})";
                 Console.WriteLine(sql);
 
                 using (NpgsqlCommand command = new NpgsqlCommand(sql, connection))
@@ -56,7 +56,7 @@ namespace MyApplication.Data
                 string setClause = string.Join(", ", valuesToUpdate.Keys.Select(k => $"\"{k}\" = @{k}"));
                 string whereClause = string.Join(" AND ", whereKeyValues.Keys.Select(k => $"\"{k}\" = @{k}"));
 
-                string sql = $"UPDATE {_schemaName}.\"{tableName}\" SET {setClause} WHERE {whereClause}";
+                string sql = $"UPDATE \"{_schemaName}\".\"{tableName}\" SET {setClause} WHERE {whereClause}";
 
                 using (NpgsqlCommand command = new NpgsqlCommand(sql, connection))
                 {
@@ -83,7 +83,7 @@ namespace MyApplication.Data
 
                 string whereClause = string.Join(" AND ", whereKeyValues.Keys.Select(k => $"\"{k}\" = @{k}"));
 
-                string sql = $"DELETE FROM {_schemaName}.\"{tableName}\" WHERE {whereClause}";
+                string sql = $"DELETE FROM \"{_schemaName}\".\"{tableName}\" WHERE {whereClause}";
 
                 using (NpgsqlCommand command = new NpgsqlCommand(sql, connection))
                 {
@@ -109,7 +109,7 @@ namespace MyApplication.Data
                     ? "WHERE " + string.Join(" AND ", whereConditions.Select(c => $"\"{c.ColumnName}\" {GetOperator(c.Operator)} @{c.ColumnName}"))
                     : "";
 
-                string sql = $"SELECT {columnList} FROM {_schemaName}.\"{tableName}\" {whereClause}";
+                string sql = $"SELECT {columnList} FROM \"{_schemaName}\".\"{tableName}\" {whereClause}";
                 Console.WriteLine(sql);
 
                 using (NpgsqlCommand command = new NpgsqlCommand(sql, connection))
@@ -167,6 +167,7 @@ namespace MyApplication.Data
 
         public List<TableInfo> GetTableList()
         {
+            Console.WriteLine("GetTableList");
             List<TableInfo> tableList = new List<TableInfo>();
 
             using (NpgsqlConnection connection = new NpgsqlConnection(_connectionString))
@@ -174,14 +175,19 @@ namespace MyApplication.Data
                 connection.Open();
 
                 string query = $"SELECT table_name FROM information_schema.tables WHERE table_type = 'BASE TABLE' AND table_schema = '{_schemaName}'";
-
+                Console.WriteLine(query);
                 using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
                 {
+                    Console.WriteLine("1");
                     using (NpgsqlDataReader reader = command.ExecuteReader())
                     {
+                        Console.WriteLine("2");
+                        Console.WriteLine(reader);
                         while (reader.Read())
                         {
+                            Console.WriteLine("3");
                             string tableName = reader["table_name"].ToString();
+                            Console.WriteLine(tableName);
                             TableInfo tableInfo = GetTableInfo(tableName);
                             tableList.Add(tableInfo);
                         }
@@ -203,7 +209,7 @@ namespace MyApplication.Data
             {
                 connection.Open();
 
-                string query = $"SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '{_schemaName}.\"{tableName}\"'";
+                string query = $"SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '\"{_schemaName}\".\"{tableName}\"'";
 
                 using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
                 {
