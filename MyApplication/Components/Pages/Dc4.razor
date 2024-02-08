@@ -1,0 +1,115 @@
+﻿@page "/dc4"
+@using System;
+@using System.Collections.Generic;
+@using __Blazor.MyApplication.Components.Pages.Counter;
+@using Microsoft.AspNetCore.Components;
+@using Microsoft.AspNetCore.Components.CompilerServices;
+@using Microsoft.AspNetCore.Components.Rendering;
+@using Microsoft.AspNetCore.Components.Web;
+@using MudBlazor;
+
+<h1>Build a component</h1>
+
+<div>
+    @CustomRender
+</div>
+
+<button @onclick="RenderComponent">
+    Create three Pet Details components
+</button>
+
+<DynamicComponent Type="@componentType" Parameters="@parameters" />
+
+@code {
+
+	private int currentCount = 0;
+
+	private Type componentType = typeof(MudTextField<string>);
+
+	private IDictionary<string, object> parameters = new Dictionary<string, object> { { "Label", "aaa" } };
+
+	public string TextValue { get; set; }
+
+    private RenderFragment? CustomRender { get; set; }
+
+	private void IncrementCount()
+	{
+		currentCount++;
+	}
+
+	private IDictionary<string, string> dicValues = new Dictionary<string, string>{
+		{"a", "a"}
+	};
+
+    private RenderFragment CreateComponent() => __builder =>
+    {
+		__builder.OpenComponent<PageTitle>(0);
+		__builder.AddAttribute(1, "ChildContent", (RenderFragment)delegate(RenderTreeBuilder __builder2)
+		{
+			__builder2.AddContent(2, "Counter");
+		});
+		__builder.CloseComponent();
+		__builder.AddMarkupContent(3, "\n\n");
+		__builder.OpenComponent<MudText>(4);
+		__builder.AddComponentParameter(5, "Typo", RuntimeHelpers.TypeCheck(Typo.h3));
+		__builder.AddComponentParameter(6, "GutterBottom", RuntimeHelpers.TypeCheck(value: true));
+		__builder.AddAttribute(7, "ChildContent", (RenderFragment)delegate(RenderTreeBuilder __builder2)
+		{
+			__builder2.AddContent(8, "Counter");
+		});
+		__builder.CloseComponent();
+		__builder.AddMarkupContent(9, "\n");
+		__builder.OpenComponent<MudText>(10);
+		__builder.AddComponentParameter(11, "Class", "mb-4");
+		__builder.AddAttribute(12, "ChildContent", (RenderFragment)delegate(RenderTreeBuilder __builder2)
+		{
+			__builder2.AddContent(13, "Current count: ");
+			__builder2.AddContent(14, currentCount);
+		});
+		__builder.CloseComponent();
+		__builder.AddMarkupContent(15, "\n");
+		__builder.OpenComponent<MudButton>(16);
+		__builder.AddComponentParameter(17, "Color", RuntimeHelpers.TypeCheck(Color.Primary));
+		__builder.AddComponentParameter(18, "Variant", RuntimeHelpers.TypeCheck(Variant.Filled));
+		__builder.AddComponentParameter(19, "onclick", EventCallback.Factory.Create<MouseEventArgs>((object)this, (Action)IncrementCount));
+		__builder.AddAttribute(20, "ChildContent", (RenderFragment)delegate(RenderTreeBuilder __builder2)
+		{
+			__builder2.AddContent(21, "Click me");
+		});
+		__builder.CloseComponent();
+		__builder.AddMarkupContent(22, "\n\n\n");
+		TypeInference.CreateMudTextField_0(__builder, 23, 24, "Standard", 25, Variant.Text, 26, TextValue, 27, EventCallback.Factory.Create(this, RuntimeHelpers.CreateInferredEventCallback(this, delegate(string __value)
+		{
+			TextValue = __value;
+		}, TextValue)));
+		__builder.AddMarkupContent(28, "\n");
+		TypeInference.CreateMudTextField_1(__builder, 29, 30, "Filled", 31, Variant.Filled, 32, TextValue, 33, EventCallback.Factory.Create(this, RuntimeHelpers.CreateInferredEventCallback(this, delegate(string __value)
+		{
+			TextValue = __value;
+		}, TextValue)));
+		__builder.AddMarkupContent(34, "\n");
+		TypeInference.CreateMudTextField_2(__builder, 35, 36, "Outlined", 37, Variant.Outlined, 38, dicValues["a"], 39, EventCallback.Factory.Create(this, RuntimeHelpers.CreateInferredEventCallback(this, delegate(string __value)
+		{
+			dicValues["a"] = __value;
+		}, dicValues["a"])));
+		__builder.AddMarkupContent(40, "\n\n\n");
+
+		
+		parameters["Value"] = dicValues["a"]; 
+		parameters["ValueChanged"] = EventCallback.Factory.Create(this, RuntimeHelpers.CreateInferredEventCallback(this, delegate(string __value)
+		{
+			dicValues["a"] = __value;
+		}, dicValues["a"]));
+
+		@* __builder.OpenComponent<DynamicComponent>(41);
+		__builder.AddComponentParameter(42, "Type", RuntimeHelpers.TypeCheck(componentType));
+		__builder.AddComponentParameter(43, "Parameters", RuntimeHelpers.TypeCheck(parameters));
+		__builder.CloseComponent(); *@
+
+    };
+
+    private void RenderComponent()
+    {
+        CustomRender = CreateComponent();
+    }
+}

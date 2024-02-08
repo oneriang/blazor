@@ -2,6 +2,11 @@
 @using Newtonsoft.Json.Linq;
 @using MyApplication.Data
 @inject DynamicEntityService dynamicEntityService
+@using Microsoft.AspNetCore.Components;
+@using Microsoft.AspNetCore.Components.CompilerServices;   @using Microsoft.AspNetCore.Components.Rendering;
+@using Microsoft.AspNetCore.Components.Web;
+@using MudBlazor;
+
 
 @code {
     [Parameter]
@@ -34,7 +39,10 @@
         return new Dictionary<string, object>
                 {
                     { "Label", item.Key },
-                    { "Value", item.Value },
+                    { "Value", _formData[item.Key] },
+{"ValueChanged",
+                    EventCallback.
+Factory.Create(this, RuntimeHelpers.CreateInferredEventCallback(this, delegate(string __value)                                        {                                                                  _formData[item.Key] = __value;                          }, _formData[item.Key]))}
                     @* { "Required", true },
                     { "RequiredError", item.Key + " is required!" } *@
                 };
@@ -66,8 +74,9 @@
                                 { "Value", @item.Value },
                                 { "Required", true },
                                 { "RequiredError", @item.Key + " is required!" }
-                            })" /> *@
-                        <DynamicComponent Type="@getType()" Parameters="@getParameters(item)" />
+                            })" /> 
+                        <DynamicComponent Type="@getType()" Parameters="@getParameters(item)" />*@
+<DynamicComponent Type="@getType()" Parameters="@getParameters(item)" />
                     }
                 }
 

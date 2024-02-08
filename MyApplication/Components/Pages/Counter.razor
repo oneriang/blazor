@@ -15,3 +15,20 @@
         currentCount++;
     }
 }
+
+<MudTextField @bind-Value="TextValue" Label="Standard" Variant="Variant.Text"></MudTextField>
+<MudTextField @bind-Value="TextValue" Label="Filled" Variant="Variant.Filled"></MudTextField>
+<MudTextField @bind-Value="TextValue" Label="Outlined" Variant="Variant.Outlined"></MudTextField>
+
+@code {
+    public string TextValue { get; set; }
+}
+
+<DynamicComponent Type="@componentType" Parameters="@parameters" />
+
+@code {
+    private Type componentType = typeof(MudTextField<string>);
+    private IDictionary<string, object> parameters = new Dictionary<string, object>{
+  {"Label", "aaa"}
+};
+}
