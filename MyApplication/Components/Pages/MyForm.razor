@@ -40,9 +40,9 @@
                 {
                     { "Label", item.Key },
                     { "Value", _formData[item.Key] },
-{"ValueChanged",
+@*{"ValueChanged",
                     EventCallback.
-Factory.Create(this, RuntimeHelpers.CreateInferredEventCallback(this, delegate(string __value)                                        {                                                                  _formData[item.Key] = __value;                          }, _formData[item.Key]))}
+Factory.Create(this, RuntimeHelpers.CreateInferredEventCallback(this, delegate(string __value)                                        {                                                                  _formData[item.Key] = __value;                          }, _formData[item.Key]))}*@
                     @* { "Required", true },
                     { "RequiredError", item.Key + " is required!" } *@
                 };
@@ -64,9 +64,9 @@ Factory.Create(this, RuntimeHelpers.CreateInferredEventCallback(this, delegate(s
                 {
                     @foreach (var item in _formData)
                     {
-                        @* Console.WriteLine(item.GetType()); *@
-                        @* <MudTextField T="object" Value="@item.Value" Label="@item.Key" Required="true"
-                RequiredError="@(item.Key + " is required!")" /> *@
+                        Console.WriteLine(item.GetType());
+Console.WriteLine(item.Value.GetType());
+                        <MudTextField  Value="@item.Value.ToString()" Label="@item.Key" ValueChanged="(e => onchange(e.ToString(), item.Key))" /> 
                         @* <DynamicComponent Type="@(Type.GetType("MudBlazor.MudTextField`1[System.Object], MudBlazor"))"
                             Parameters="@(new Dictionary<string, object>
                             {
@@ -76,7 +76,7 @@ Factory.Create(this, RuntimeHelpers.CreateInferredEventCallback(this, delegate(s
                                 { "RequiredError", @item.Key + " is required!" }
                             })" /> 
                         <DynamicComponent Type="@getType()" Parameters="@getParameters(item)" />*@
-<DynamicComponent Type="@getType()" Parameters="@getParameters(item)" />
+@*<DynamicComponent Type="@getType()" Parameters="@getParameters(item)" />*@
                     }
                 }
 
@@ -131,6 +131,15 @@ Factory.Create(this, RuntimeHelpers.CreateInferredEventCallback(this, delegate(s
     string[] errors = { };
     MudTextField<string> pwField1;
     MudForm form;
+
+
+void onchange(string e, string key)                                        {
+
+ Console.WriteLine($"Input changed for {e}");                                        
+Console.WriteLine($"Input changed for {key}");                             
+ 
+//dictionary1[key] = e.ToString();         
+     }
 
     private IEnumerable<string> PasswordStrength(string pw)
     {

@@ -1,0 +1,157 @@
+@page "/dict"
+@using Newtonsoft.Json;
+@using Newtonsoft.Json.Linq;
+@using System.Dynamic;
+
+@code{
+
+    private Dictionary<string, object> dictionary;
+
+    protected override Task OnInitializedAsync()
+    {
+        string json = @"{
+            ""name"": ""John"",
+            ""age"": 30,
+            ""isStudent"": false,
+            ""address"": {
+                ""city"": ""New York"",
+                ""zip"": ""10001""
+            },
+            ""hobbies"": [
+                ""reading"",
+                ""swimming"",
+                ""coding""
+            ]
+        }";
+        
+        // 将 JSON 字符串解析为 JObject
+        JObject jsonObject = JObject.Parse(json);
+
+        // 将 JObject 转换为 Dictionary
+        dictionary = ToDictionary(jsonObject);
+
+        // 输出 Dictionary
+        foreach (KeyValuePair<string, object> pair in dictionary)
+        {
+            Console.WriteLine($"{pair.Key}: {pair.Value}");
+            Console.WriteLine($"{dictionary[pair.Key]}");
+        }
+
+        return base.OnInitializedAsync();
+    }
+
+
+    // 将 JObject 转换为 Dictionary 的递归方法
+    static Dictionary<string, object> ToDictionary(JObject jobject)
+    {
+        var dictionary = new Dictionary<string, object>();
+
+        foreach (var property in jobject.Properties())
+        {
+            if (property.Value is JObject)
+            {
+                // 如果是 JObject，则递归调用 ToDictionary 方法
+                dictionary.Add(property.Name, ToDictionary((JObject)property.Value));
+            }
+            else if (property.Value is JArray)
+            {
+                // 如果是 JArray，则递归处理每个元素
+                var array = new List<object>();
+                foreach (var item in (JArray)property.Value)
+                {
+                    if (item is JObject)
+                    {
+                        array.Add(ToDictionary((JObject)item));
+                    }
+                    else
+                    {
+                        array.Add(item.ToObject<object>());
+                    }
+                }
+                dictionary.Add(property.Name, array);
+            }
+            else
+            {
+                // 否则，将属性添加到字典中
+                dictionary.Add(property.Name, ((JValue)property.Value).Value);
+            }
+        }
+
+        return dictionary;
+    }
+
+    void InputChanged(ChangeEventArgs e)
+    {
+        dictionary["name"] = (string)e.Value;
+    }
+
+
+}
+
+<input value="@dictionary["name"]"  @onchange="InputChanged" @oninput="@(e => HandleInputChange("name"))"/>
+<p>@dictionary["name"]</p>
+
+var1
+<input type="text" @bind="@variable1" @oninput="@(e => HandleInputChange(nameof(variable1)))" />
+var2
+<input type="text" @bind="@variable2" @oninput="@(e => HandleInputChange(nameof(variable2)))" />
+var3
+<input type="text" @bind="@variable3" @oninput="@(e => HandleInputChange(nameof(variable3)))" />
+<h1>@variable2</h1>
+<h1>@variable3</h1>
+@code {
+    string variable1;
+    string variable2;
+    string variable3;
+
+    void HandleInputChange(string variableName)
+    {
+        // Determine which variable changed
+        Console.WriteLine($"Input changed for {variableName}");
+    }
+}
+
+
+<h1>Dictionary Binding Example</h1>
+
+@foreach (var item in dictionary1)
+{
+    <div>
+        <label>@item.Key</label>
+        <br/>
+        <label>@item.Value</label>
+        <br/>
+        <input value="@item.Value" @oninput="@(e => HandleInputChange1(e, item.Key))" @onchange="@(e => onchange(e, item.Key))"/>
+    </div>
+}
+
+@code {
+    private Dictionary<string, object> dictionary1 = new Dictionary<string, object>
+    {
+        ["Name"] = "Alice",
+        ["Age"] = 25,
+        ["Email"] = "alice@example.com"
+    };
+
+    void onchange1(ChangeEventArgs e, string key)
+    {
+        // Determine which variable changed
+        dictionary1[key] = e.Value.ToString();
+        Console.WriteLine($"Input changed for {key}");
+    }
+
+    void onchange(ChangeEventArgs e, string key)
+    {
+        // Determine which variable changed
+        dictionary1[key] = e.Value.ToString();
+        Console.WriteLine($"Input changed for {key}");
+    }
+
+    void HandleInputChange1(ChangeEventArgs e, string key)
+    {
+        // Determine which variable changed
+        // dictionary1[key] = e.Value.ToString();
+        //Console.WriteLine($"Input changed for {key}");
+    }
+}
+

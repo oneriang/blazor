@@ -1,0 +1,107 @@
+﻿@page "/"
+
+
+<div>
+    <Input Placeholder="Basic usage" @bind-Value="@txtValue"  />
+    <br />
+    <br />
+    <Text>@txtValue</Text>
+</div>
+@code{
+    string txtValue { get; set; }
+}
+
+<TextArea ShowCount MaxLength=100 OnChange="onChange" />
+<TextArea ShowCount MaxLength=100 OnChange="(e => onchange(e, txtValue))" />
+@code{
+
+    private void onChange(string value)
+    {
+        Console.WriteLine("onChange =>" + value);
+    }
+
+void onchange(string e, string key)                                        {
+        Console.WriteLine($"Input changed for {e}");
+        Console.WriteLine($"Input changed for {key}");
+dictionary1[key] = e.ToString();
+    }
+
+private Dictionary<string, object> dictionary1 = new Dictionary<string, object>     {                                             ["Name"] = "Alice",
+        ["Age"] = 25,
+        ["Email"] = "alice@example.com"
+    };
+
+void onchange1(ChangeEventArgs e, string key)
+{ 
+                                            dictionary1[key] = e.Value.ToString();
+    Console.WriteLine($"Input changed for {key}");
+                                  }
+
+  void HandleInputChange1(ChangeEventArgs e, string key) 
+{
+
+        // Determine which variable changed                                                 // dictionary1[key] = e.Value.ToString();                                           //Console.WriteLine($"Input changed for {key}");
+   }
+}
+
+@foreach (var item in dictionary1)        {
+    <div>
+        <label>@item.Key</label>
+        <br/>
+        <label>@item.Value</label>
+
+        <br/>                                     
+        <input value="@item.Value" @oninput="@(e => HandleInputChange1(e, item.Key))" @onchange="@(e => onchange1(e, item.Key))"/>
+
+<TextArea ShowCount MaxLength=100 Value="@item.Value.ToString()"  OnChange="(e => onchange(e, item.Key))" />
+
+    </div>
+}
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+
+<PageContainer Title="Welcome">
+    <Card>
+        <Alert
+            Message="AntDesign.Templates have been published to nuget, you can download and use them directly."
+            Type="success"
+            ShowIcon="true"
+            Banner
+            Style="margin: -12px; margin-bottom: 24px"/>
+        <Text Strong>
+            <a target="_blank" rel="noopener noreferrer" href="https://www.nuget.org/packages/AntDesign.Templates">
+                Use .NET CLI to install the latest template quickly.
+            </a>
+        </Text>
+        <pre class="pre"><code><Text Copyable> dotnet new --install AntDesign.Templates::0.1.0-*</Text></code></pre>
+        <Text
+            Strong
+            Style="margin-bottom: 12px">
+            <a target="_blank" rel="noopener noreferrer" href="https://github.com/ant-design-blazor/ant-design-pro-blazor">
+               Create an empty server-side Blazor project.
+            </a>
+        </Text>
+        <pre class="pre"><code><Text Copyable> dotnet new antdesign --host=server</Text></code></pre>
+        <Text
+            Strong
+            Style="margin-bottom: 12px">
+            <a target="_blank" rel="noopener noreferrer" href="https://github.com/ant-design-blazor/ant-design-pro-blazor">
+                Create an empty server-side Blazor project with all pages.
+            </a>
+        </Text>
+        <pre class="pre"><code><Text Copyable> dotnet new antdesign --host=server --full</Text></code></pre>
+    </Card>
+    <p style="text-align: center; margin-top: 24px;">
+        Want to add more pages? Please refer to
+        <a href="https://github.com/ant-design-blazor/ant-design-pro-blazor" target="_blank" rel="noopener noreferrer">
+            ant-design-pro-blazor project
+        </a>
+        .
+    </p>
+</PageContainer>

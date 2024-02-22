@@ -1,0 +1,119 @@
+@page "/item"
+@using Newtonsoft.Json;
+@using Newtonsoft.Json.Linq;
+@using System.Dynamic;
+
+@code{
+public class JsonHelper
+{
+    public static dynamic ParseJson(string json)
+    {
+        return JsonConvert.DeserializeObject<dynamic>(json);
+    }
+
+    public static dynamic ParseJsonRecursive(string json)
+    {
+        return ParseJsonRecursive(JToken.Parse(json));
+    }
+
+    private static dynamic ParseJsonRecursive(JToken token)
+    {
+        if (token.Type == JTokenType.Object)
+        {
+            var dict = token.ToObject<Dictionary<string, object>>();
+            var dynamicObject = new ExpandoObject() as IDictionary<string, object>;
+
+            foreach (var kvp in dict)
+            {
+                dynamicObject.Add(kvp.Key, ParseJsonRecursive(JToken.FromObject(kvp.Value)));
+            }
+
+            return dynamicObject;
+        }
+        else if (token.Type == JTokenType.Array)
+        {
+            var array = new List<dynamic>();
+
+            foreach (var child in token.Children())
+            {
+                array.Add(ParseJsonRecursive(child));
+            }
+
+            return array;
+        }
+        else
+        {
+            return ((JValue)token).Value;
+        }
+    }
+}
+
+private dynamic obj;
+
+protected override Task OnInitializedAsync()
+    {
+
+string json = @"{
+    ""name"": ""John"",
+    ""age"": 30,
+    ""isStudent"": false,
+    ""address"": {
+        ""city"": ""New York"",
+        ""zip"": ""10001""
+    },
+    ""hobbies"": [
+        ""reading"",
+        ""swimming"",
+        ""coding""
+    ]
+}";
+
+obj = JsonHelper.ParseJsonRecursive(json);
+Console.WriteLine(obj.name); // Output: John
+//Console.WriteLine(obj.GetType().GetProperty("name").GetValue(obj, null)); // Output: John
+Console.WriteLine(obj.address.city); // Output: New York
+Console.WriteLine(obj.hobbies[0]); // Output: reading
+return base.OnInitializedAsync();     }
+}
+
+<input @onchange="InputChanged" />
+<p>@message</p>
+
+@code {
+    string message = "";
+
+    void InputChanged(ChangeEventArgs e)
+    {
+        message = (string)e.Value;
+    }
+
+    void ObjInputChanged(ChangeEventArgs e)
+    {
+        obj.name = (string)e.Value;
+    }
+
+    void ObjCityInputChanged(ChangeEventArgs e)
+    {
+        obj.address.city = (string)e.Value;
+    }
+    
+}
+
+<input @bind="text" />
+<button @onclick="() => text = string.Empty">Clear</button>
+<p>@text</p>
+
+@code {
+    string text = "";
+}
+
+<!-- <input @bind="obj.name" />                     -->
+<!-- <button @onclick="() => obj.name = string.Empty">Clear</button>                          -->
+<p>@obj.name</p>
+
+<input value="@obj.name" @onchange="ObjInputChanged" />
+<p>@obj.name</p>
+
+<input value="@obj.address.city" @onchange="ObjCityInputChanged" />
+<p>@obj.address.city</p>
+
