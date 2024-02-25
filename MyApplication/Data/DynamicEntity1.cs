@@ -56,6 +56,9 @@ namespace MyApplication.Data
     {
         private readonly IDatabaseProvider databaseProvider;
 
+        private TableInfo _currentTableInfo;
+        public TableInfo CurrentTableInfo { get => _currentTableInfo; set => _currentTableInfo = value; }
+
         public DynamicEntity1(IDatabaseProvider databaseProvider, string connectionString, string schemaName="")
         {
             databaseProvider.ConnectionString = connectionString;
@@ -88,8 +91,17 @@ namespace MyApplication.Data
             return databaseProvider.GetTableList();
         }
 
+        public Dictionary<string, TableInfo> GetDicTableInfo()
+        {
+            if (databaseProvider.DicTableInfo == null) {
+                databaseProvider.GetTableList();
+            }
+            return databaseProvider.DicTableInfo;
+        }
+
         public TableInfo GetTableInfo(string tableName)
         {
+            _currentTableInfo = databaseProvider.DicTableInfo[tableName];
             return databaseProvider.GetTableInfo(tableName);
         }
     }

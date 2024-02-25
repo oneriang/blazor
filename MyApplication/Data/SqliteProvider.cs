@@ -14,12 +14,29 @@ namespace MyApplication.Data
         }
 
         private string _schemaName = "";
-
         public string SchemaName
         {
             get => _schemaName;
             set => _schemaName = value;
         }
+
+        private List<TableInfo> _listTableInfo = new List<TableInfo>();
+        public List<TableInfo> ListTableInfo
+        {
+            get => _listTableInfo;
+            set => _listTableInfo = value;
+        }
+
+        private Dictionary<string, TableInfo> _dicTableInfo = new Dictionary<string, TableInfo>();
+        public Dictionary<string, TableInfo> DicTableInfo
+        {
+            get => _dicTableInfo;
+            set => _dicTableInfo = value;
+        }
+
+        private TableInfo _myTableInfo;
+
+        public TableInfo MyTableInfo { get => _myTableInfo; set => _myTableInfo = value; }
 
         public void Insert(string tableName, Dictionary<string, object> valuesToInsert)
         {
@@ -165,7 +182,7 @@ namespace MyApplication.Data
 
         public List<TableInfo> GetTableList()
         {
-            List<TableInfo> tableList = new List<TableInfo>();
+            // List<TableInfo> tableList = new List<TableInfo>();
 
             using (SqliteConnection connection = new SqliteConnection(_connectionString))
             {
@@ -181,13 +198,14 @@ namespace MyApplication.Data
                         {
                             string tableName = reader["name"].ToString();
                             TableInfo tableInfo = GetTableInfo(tableName);
-                            tableList.Add(tableInfo);
+                            _listTableInfo.Add(tableInfo);
+                            _dicTableInfo[tableName] = tableInfo;
                         }
                     }
                 }
             }
 
-            return tableList;
+            return _listTableInfo;
         }
 
 
@@ -218,6 +236,7 @@ namespace MyApplication.Data
                             };
 
                             tableInfo.Columns.Add(columnInfo);
+                            tableInfo.DicColumns[columnInfo.ColumnName] = columnInfo;
                         }
                     }
                 }

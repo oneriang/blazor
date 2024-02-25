@@ -4,20 +4,31 @@ namespace MyApplication.Data
 {
     public class DynamicEntityService
     {
-        private DynamicEntity1 dynamicEntity;
+        // private DynamicEntity1 dynamicEntity;
 
-        public DynamicEntity1 GetDynamicEntity()
-        {
-            return dynamicEntity;
-        }
+        // public DynamicEntity1 GetDynamicEntity()
+        // {
+        //     return dynamicEntity;
+        // }
 
-        public void SetDynamicEntity(DynamicEntity1 newDynamicEntity)
+        // public void SetDynamicEntity(DynamicEntity1 newDynamicEntity)
+        // {
+        //     dynamicEntity = newDynamicEntity;
+        // }
+
+        private DynamicEntity1 _dynamicEntity;
+        public DynamicEntity1 DynamicEntity
         {
-            dynamicEntity = newDynamicEntity;
+            get => _dynamicEntity;
+            set => _dynamicEntity = value;
         }
 
         private string _tableName = "";
 
         public string TableName { get => _tableName; set => _tableName = value; }
+
+        private TableInfo _myTableInfo;
+
+        public TableInfo MyTableInfo { get => _myTableInfo; set => _myTableInfo = value; }
     }
 }

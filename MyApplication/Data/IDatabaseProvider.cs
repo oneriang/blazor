@@ -34,6 +34,18 @@ namespace MyApplication.Data
             get;
             set;
         }
+
+        List<TableInfo> ListTableInfo {
+            get;
+            set;
+        }
+
+        Dictionary<string, TableInfo> DicTableInfo {
+            get;
+            set;
+        }
+        // TableInfo MyTableInfo { get; set; }
+
         void Insert(string tableName, Dictionary<string, object> valuesToInsert);
         void Update(string tableName, Dictionary<string, object> whereKeyValues, Dictionary<string, object> valuesToUpdate);
         void Delete(string tableName, Dictionary<string, object> whereKeyValues);
@@ -55,5 +67,6 @@ namespace MyApplication.Data
         public string ColumnName { get; set; }
         public string DataType { get; set; }
         public List<ColumnInfo> Columns { get; set; } = new List<ColumnInfo>();
+        public Dictionary<string, ColumnInfo> DicColumns { get; set; } = new Dictionary<string, ColumnInfo>();
     }
 }

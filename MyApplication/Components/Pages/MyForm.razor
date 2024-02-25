@@ -27,7 +27,7 @@
     private DynamicEntity1 dynamicEntity;
     protected override void OnInitialized()
     {
-        dynamicEntity = dynamicEntityService.GetDynamicEntity();
+        dynamicEntity = dynamicEntityService.DynamicEntity;
     }
 
     private IDictionary<string, object> parameters = new Dictionary<string, object>
@@ -40,11 +40,6 @@
                 {
                     { "Label", item.Key },
                     { "Value", _formData[item.Key] },
-@*{"ValueChanged",
-                    EventCallback.
-Factory.Create(this, RuntimeHelpers.CreateInferredEventCallback(this, delegate(string __value)                                        {                                                                  _formData[item.Key] = __value;                          }, _formData[item.Key]))}*@
-                    @* { "Required", true },
-                    { "RequiredError", item.Key + " is required!" } *@
                 };
     }
 
@@ -64,54 +59,42 @@ Factory.Create(this, RuntimeHelpers.CreateInferredEventCallback(this, delegate(s
                 {
                     @foreach (var item in _formData)
                     {
-                        Console.WriteLine(item.GetType());
-Console.WriteLine(item.Value.GetType());
-                        <MudTextField  Value="@item.Value.ToString()" Label="@item.Key" ValueChanged="(e => onchange(e.ToString(), item.Key))" /> 
-                        @* <DynamicComponent Type="@(Type.GetType("MudBlazor.MudTextField`1[System.Object], MudBlazor"))"
-                            Parameters="@(new Dictionary<string, object>
-                            {
-                                { "Label", @item.Key },
-                                { "Value", @item.Value },
-                                { "Required", true },
-                                { "RequiredError", @item.Key + " is required!" }
-                            })" /> 
-                        <DynamicComponent Type="@getType()" Parameters="@getParameters(item)" />*@
-@*<DynamicComponent Type="@getType()" Parameters="@getParameters(item)" />*@
+                        Console.WriteLine(item.Key);
+                        Console.WriteLine(item.Value.ToString());
+                        Console.WriteLine(item.Value.GetType());
+                         Console.WriteLine(dynamicEntity.CurrentTableInfo.DicColumns[item.Key].DataType);
+                        // @if (item.Value.GetType().ToString() == "System.String") {
+                        //     <MudTextField T="string" Value="@item.Value.ToString()" Label="@item.Key" ValueChanged="(e => onchange(e.ToString(), item.Key))" /> 
+                        // }
+                        // else if (item.Value.GetType().ToString() == "System.Int64") {
+                        //     <MudTextField T="long" Value="@((long)item.Value)" Label="@item.Key" ValueChanged="(e => onchange(e.ToString(), item.Key))" /> 
+                        // }
+                        // @if (item.Value.GetType().ToString() == "System.String") {
+                        //     <MudTextField T="string" Value="@item.Value.ToString()" Label="@item.Key" ValueChanged="(e => onchange1(e, item.Key))" /> 
+                        // }
+                        // else if (item.Value.GetType().ToString() == "System.Int64") {
+                        //     <MudTextField T="long" Value="@((long)item.Value)" Label="@item.Key" ValueChanged="(e => onchange1(e, item.Key))" /> 
+                        // }
+                        @if (dynamicEntity.CurrentTableInfo.DicColumns[item.Key].DataType == "DATETIME") {
+                            // <MudTextField T="string" Value="@item.Value.ToString()" Label="@item.Key" ValueChanged="(e => onchange1(e, item.Key))" /> 
+                            <MudTextField T="DateTime?" Format="s" Value="@DateTime.Parse(item.Value.ToString())" Label="DateTimeLocal" InputType="InputType.DateTimeLocal"/>
+                        }
+                        else if (dynamicEntity.CurrentTableInfo.DicColumns[item.Key].DataType == "INTEGER") {
+                            @if (item.Value.GetType().ToString() != "System.DBNull") {
+                                <MudTextField T="long" Value="@((long)item.Value)" Label="@item.Key" ValueChanged="(e => onchange1(e, item.Key))" /> 
+                            } else {
+                                <MudTextField T="long" Value="0" Label="@item.Key" ValueChanged="(e => onchange1(e, item.Key))" /> 
+                            }
+                        }
+                        else {
+                            <MudTextField T="string" Value="@item.Value.ToString()" Label="@item.Key" ValueChanged="(e => onchange1(e, item.Key))" /> 
+                        }
                     }
                 }
-
-                @* <MudTextField T="string" Label="Username" Required="true" RequiredError="User name is required!" />
-                <MudTextField T="string" Label="Email" Required="true" RequiredError="Email is required!"
-                Validation="@(new EmailAddressAttribute() {ErrorMessage = "The email address is invalid"})" />
-                <MudTextField T="string" Label="Password" HelperText="Choose a strong password" @ref="pwField1"
-                InputType="InputType.Password"
-                Validation="@(new Func<string, IEnumerable<string>>(PasswordStrength))" Required="true"
-                RequiredError="Password is required!"/>
-                <MudTextField T="string"
-                Label="Password" HelperText="Repeat the password" InputType="InputType.Password"
-                Validation="@(new Func<string, string>(PasswordMatch))"/>
-                <div class="d-flex">
-                <MudRadioGroup T="string" Required="true" RequiredError="Account type is required!">
-                <MudRadio Option="@("Personal")">Personal</MudRadio>
-                <MudRadio Option="@("Professional")">Professional</MudRadio>
-                </MudRadioGroup>
-                </div> *@
-                @* <div class="d-flex align-center justify-space-between">
-                <MudCheckBox T="bool" Required="true" RequiredError="You must agree" Label="I agree!" />
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!success)"
-                Class="ml-auto">Register</MudButton>
-                </div> *@
             </MudForm>
         </MudPaper>
         <MudPaper Class="pa-4 mt-4">
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" DisableElevation="true"
-                OnClick="@(()=>form.Validate())">Validate</MudButton>
-            <MudButton Variant="Variant.Filled" Color="Color.Secondary" DisableElevation="true"
-                OnClick="@(()=>form.ResetAsync())" Class="mx-2">Reset</MudButton>
-            <MudButton Variant="Variant.Filled" DisableElevation="true" OnClick="@(()=>form.ResetValidation())">Reset
-                Validation</MudButton>
-            <MudButton Variant="Variant.Filled" DisableElevation="true" OnClick="Save">
-                Save</MudButton>
+            <MudButton Variant="Variant.Filled" DisableElevation="true" OnClick="Save">Save</MudButton>
         </MudPaper>
     </MudItem>
     <MudItem xs="12" sm="5">
@@ -132,14 +115,19 @@ Console.WriteLine(item.Value.GetType());
     MudTextField<string> pwField1;
     MudForm form;
 
+    void onchange(string e, string key){
+        Console.WriteLine($"Input changed for {e}");                                        
+        Console.WriteLine($"Input changed for {key}");                             
 
-void onchange(string e, string key)                                        {
+        _formData[key] = e.ToString();         
+    }
 
- Console.WriteLine($"Input changed for {e}");                                        
-Console.WriteLine($"Input changed for {key}");                             
- 
-//dictionary1[key] = e.ToString();         
-     }
+    void onchange1(object e, string key){
+        Console.WriteLine($"Input changed for {e}");                                        
+        Console.WriteLine($"Input changed for {key}");                             
+
+        _formData[key] = e.ToString();
+    }
 
     private IEnumerable<string> PasswordStrength(string pw)
     {

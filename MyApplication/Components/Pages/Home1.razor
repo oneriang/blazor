@@ -59,6 +59,7 @@ else
     private string schemaName = "public";
     private string tableName = "";
     private List<TableInfo> tableList;
+    private Dictionary<string, TableInfo> dicTableInfo;
 
     private string selectedDatabase = "sqlite";
 
@@ -82,14 +83,18 @@ else
                 throw new ArgumentException($"Unknown database selected: {selectedDatabase}");
         }
 
-        dynamicEntityService.SetDynamicEntity(dynamicEntity);
-        dynamicEntity = dynamicEntityService.GetDynamicEntity();
-        
+        // dynamicEntityService.SetDynamicEntity(dynamicEntity);
+        // dynamicEntity = dynamicEntityService.GetDynamicEntity();
+        dynamicEntityService.DynamicEntity = dynamicEntity;
+
         @* dynamicEntity = new DynamicEntity1(SqliteProvider, connectionString); *@
         @* dynamicEntity = new DynamicEntity1(SqlServerProvider, connectionStringSqlserver); *@
         @* dynamicEntity = new DynamicEntity1(MySqlProvider, connectionStringMysql); *@
         @* dynamicEntity = new DynamicEntity1(PostgreSqlProvider, connectionStringPostgreSQL, schemaName); *@
         tableList = dynamicEntity.GetTableList();
+        Console.WriteLine(tableList);
+        dicTableInfo = dynamicEntity.GetDicTableInfo();
+        Console.WriteLine(dicTableInfo);
     }
 
     private List<Dictionary<string, object>> queryResults;
@@ -105,6 +110,14 @@ else
     {
         tableName = e;
         dynamicEntityService.TableName = tableName;
+        dynamicEntity.GetTableInfo(tableName);
+        Console.WriteLine(tableName);
+        Console.WriteLine(dicTableInfo[tableName].TableName);
+        Console.WriteLine(dicTableInfo[tableName].Columns);
+        foreach(var col in dicTableInfo[tableName].Columns){
+            Console.WriteLine(col.ColumnName);
+            Console.WriteLine(col.DataType);
+        }
         QueryData();
     }
 

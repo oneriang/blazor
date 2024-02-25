@@ -22,6 +22,20 @@ namespace MyApplication.Data
             set => _schemaName = value;
         }
 
+        private List<TableInfo> _listTableInfo = new List<TableInfo>();
+        public List<TableInfo> ListTableInfo
+        {
+            get => _listTableInfo;
+            set => _listTableInfo = value;
+        }
+
+        private Dictionary<string, TableInfo> _dicTableInfo = new Dictionary<string, TableInfo>();
+        public Dictionary<string, TableInfo> DicTableInfo
+        {
+            get => _dicTableInfo;
+            set => _dicTableInfo = value;
+        }
+
         public void Insert(string tableName, Dictionary<string, object> valuesToInsert)
         {
             Console.WriteLine("Insert");
