@@ -3,7 +3,8 @@
 @using MyApplication.Data
 @inject DynamicEntityService dynamicEntityService
 @using Microsoft.AspNetCore.Components;
-@using Microsoft.AspNetCore.Components.CompilerServices;   @using Microsoft.AspNetCore.Components.Rendering;
+@using Microsoft.AspNetCore.Components.CompilerServices;
+@using Microsoft.AspNetCore.Components.Rendering;
 @using Microsoft.AspNetCore.Components.Web;
 @using MudBlazor;
 
@@ -59,10 +60,10 @@
                 {
                     @foreach (var item in _formData)
                     {
-                        Console.WriteLine(item.Key);
-                        Console.WriteLine(item.Value.ToString());
-                        Console.WriteLine(item.Value.GetType());
-                         Console.WriteLine(dynamicEntity.CurrentTableInfo.DicColumns[item.Key].DataType);
+                        // Console.WriteLine(item.Key);
+                        // Console.WriteLine(item.Value.ToString());
+                        // Console.WriteLine(item.Value.GetType());
+                        //  Console.WriteLine(dynamicEntity.CurrentTableInfo.DicColumns[item.Key].DataType);
                         // @if (item.Value.GetType().ToString() == "System.String") {
                         //     <MudTextField T="string" Value="@item.Value.ToString()" Label="@item.Key" ValueChanged="(e => onchange(e.ToString(), item.Key))" /> 
                         // }
@@ -77,7 +78,7 @@
                         // }
                         @if (dynamicEntity.CurrentTableInfo.DicColumns[item.Key].DataType == "DATETIME") {
                             // <MudTextField T="string" Value="@item.Value.ToString()" Label="@item.Key" ValueChanged="(e => onchange1(e, item.Key))" /> 
-                            <MudTextField T="DateTime?" Format="s" Value="@DateTime.Parse(item.Value.ToString())" Label="DateTimeLocal" InputType="InputType.DateTimeLocal"/>
+                            <MudTextField T="DateTime?" Format="s" Value="@DateTime.Parse(item.Value.ToString())" Label="DateTimeLocal" InputType="InputType.DateTimeLocal" ValueChanged="(e => onchange1(e, item.Key))"/>
                         }
                         else if (dynamicEntity.CurrentTableInfo.DicColumns[item.Key].DataType == "INTEGER") {
                             @if (item.Value.GetType().ToString() != "System.DBNull") {
@@ -94,7 +95,8 @@
             </MudForm>
         </MudPaper>
         <MudPaper Class="pa-4 mt-4">
-            <MudButton Variant="Variant.Filled" DisableElevation="true" OnClick="Save">Save</MudButton>
+            <MudButton Variant="Variant.Filled" DisableElevation="true" OnClick="Insert">Insert</MudButton>
+            <MudButton Variant="Variant.Filled" DisableElevation="true" OnClick="Update">Update</MudButton>
         </MudPaper>
     </MudItem>
     <MudItem xs="12" sm="5">
@@ -126,7 +128,8 @@
         Console.WriteLine($"Input changed for {e}");                                        
         Console.WriteLine($"Input changed for {key}");                             
 
-        _formData[key] = e.ToString();
+       // _formData[key] = e.ToString();
+        _formData[key] = e;
     }
 
     private IEnumerable<string> PasswordStrength(string pw)
@@ -156,19 +159,38 @@
     private void InsertData()
     {
         Console.WriteLine("InsertData");
-        Console.WriteLine(_formData["ArtistId"]);
-        Console.WriteLine(_formData["Name"]);
-        Dictionary<string, object> valuesToInsert = new Dictionary<string, object>{
-            {"ArtistId", (int)(long)_formData["ArtistId"] + 1},
-            {"Name", _formData["Name"]}
-        };
+        Dictionary<string, object> valuesToInsert = new Dictionary<string, object>();
+        foreach(var item in _formData) {
+            valuesToInsert[item.Key] = item.Value;
+        }
         dynamicEntity.Insert(dynamicEntityService.TableName, valuesToInsert);
     }
 
-    private void Save()
+    private void UpdateData()
     {
-        Console.WriteLine(form.Validate());
+        Console.WriteLine("UpdateData");
+        Dictionary<string, object> primaryKeyValues = new Dictionary<string, object>();
+        Dictionary<string, object> valuesToUpdate = new Dictionary<string, object>();
+        foreach(var item in _formData) {
+            if (dynamicEntity.CurrentTableInfo.DicColumns[item.Key].PrimaryKey) {
+                primaryKeyValues[item.Key] = item.Value;
+            } else {
+                valuesToUpdate[item.Key] = item.Value;
+            }
+        }
+        dynamicEntity.Update(dynamicEntityService.TableName, primaryKeyValues, valuesToUpdate);
+    }
+
+    private void Insert()
+    {
+        Console.WriteLine("Insert---------------");
         InsertData();
+    }
+
+    private void Update()
+    {
+        Console.WriteLine("Update---------------");
+        UpdateData();
     }
 
 }

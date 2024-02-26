@@ -108,16 +108,18 @@ else
 
     private void OnSelectedItemChanged(string e)
     {
+        Console.WriteLine("OnSelectedItemChanged---------");
         tableName = e;
+        dynamicEntityService.SelectedItem1 = null;
         dynamicEntityService.TableName = tableName;
         dynamicEntity.GetTableInfo(tableName);
-        Console.WriteLine(tableName);
-        Console.WriteLine(dicTableInfo[tableName].TableName);
-        Console.WriteLine(dicTableInfo[tableName].Columns);
-        foreach(var col in dicTableInfo[tableName].Columns){
-            Console.WriteLine(col.ColumnName);
-            Console.WriteLine(col.DataType);
-        }
+        // Console.WriteLine(tableName);
+        // Console.WriteLine(dicTableInfo[tableName].TableName);
+        // Console.WriteLine(dicTableInfo[tableName].Columns);
+        // foreach(var col in dicTableInfo[tableName].Columns){
+        //     Console.WriteLine(col.ColumnName);
+        //     Console.WriteLine(col.DataType);
+        // }
         QueryData();
     }
 

@@ -30,5 +30,10 @@ namespace MyApplication.Data
         private TableInfo _myTableInfo;
 
         public TableInfo MyTableInfo { get => _myTableInfo; set => _myTableInfo = value; }
+
+        private Dictionary<string, object> _selectedItem1 = null;
+
+        public Dictionary<string, object> SelectedItem1 { get => _selectedItem1; set => _selectedItem1 = value; } 
+
     }
 }

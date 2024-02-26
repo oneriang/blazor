@@ -85,7 +85,6 @@ namespace MyApplication.Data
                     {
                         command.Parameters.AddWithValue($"@{kvp.Key}", kvp.Value);
                     }
-
                     command.ExecuteNonQuery();
                 }
             }
@@ -232,9 +231,11 @@ namespace MyApplication.Data
                             {
                                 ColumnName = reader["name"].ToString(),
                                 DataType = reader["type"].ToString(),
+                                PrimaryKey = Convert.ToBoolean(reader["pk"]),
                                 // ... (other properties)
                             };
-
+                            // Console.WriteLine("columnInfo-------------------");
+                            // Console.WriteLine(columnInfo.PrimaryKey);
                             tableInfo.Columns.Add(columnInfo);
                             tableInfo.DicColumns[columnInfo.ColumnName] = columnInfo;
                         }

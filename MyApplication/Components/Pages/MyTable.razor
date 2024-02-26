@@ -4,6 +4,9 @@
 @using Newtonsoft.Json.Linq;
 @* @using System; *@
 
+@using MyApplication.Data
+@inject DynamicEntityService dynamicEntityService
+
 @code {
     [Parameter]
     public List<Dictionary<string, object>> DataList { 
@@ -33,7 +36,7 @@
     protected override void OnInitialized()
     {
         cols = new List<string>();
-        
+
         @*
         // 変数 jsonReadData にファイルの内容を代入
         var jsonReadData = Items;
@@ -64,11 +67,19 @@
     }
 
     private Dictionary<string, object> selectedItem1 = null;
+
+    MudTable<Dictionary<string, object>> myTable;
+
+    private void SelectedItemChanged()
+    {
+        Console.WriteLine("SelectedItemChanged");
+        // Console.WriteLine(myTable.SelectedItem["Title"]);
+        selectedItem1 = myTable.SelectedItem;
+        dynamicEntityService.SelectedItem1 = myTable.SelectedItem;
+    }
 }
 
-
-@* <MudText Inline="true" Class="align-self-center">Selected1: @selectedItem1?["Title"]</MudText> *@
-<MudTable Class="my-2 pt-2" Items="@_dataList" MultiSelection="@MultiSelection" @bind-SelectedItem="selectedItem1">
+<MudTable T="Dictionary<string, object>" @ref="myTable" Class="my-2 pt-2" Items="@_dataList" MultiSelection="@MultiSelection" SelectedItemChanged="SelectedItemChanged">
     <HeaderContent>
         @foreach (var k in cols)
         {
@@ -85,6 +96,7 @@
         <MudTablePager />
     </PagerContent>
 </MudTable>
-@if (@selectedItem1 is not null) {
-    <MyForm FormData="@selectedItem1"></MyForm>
+
+@if (dynamicEntityService.SelectedItem1 is not null) {
+    <MyForm FormData="@dynamicEntityService.SelectedItem1"></MyForm>
 }
